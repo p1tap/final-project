@@ -1,9 +1,9 @@
 # Social Media Web App
 
 ## Project Information
-- **Course:** 6510190
-- **Student:** Peerapat Thubthimthong
-- **Project Type:** Solo Final Project
+- **Course:** Web/App Development
+- **Student:** (6510190) Peerapat Thubthimthong
+- **Project:** Final Project
 
 ## Project Description
 This is a simple social media app where users can post, comment, and like posts. Users can also edit their profiles, view other users' profiles, and edit their own posts.
