@@ -10,6 +10,8 @@ import { useAuth } from '../contexts/AuthContext';
 import EditPostForm from './EditPostForm';
 import { Post } from '../types';
 import { toast } from 'react-toastify';
+import CommentSection from './CommentSection';
+
 
 interface PostCardProps {
   post: Post;
@@ -132,6 +134,7 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
             </Button>
           </Box>
         )}
+        <CommentSection postId={post._id} />
       </CardContent>
     </Card>
   );
