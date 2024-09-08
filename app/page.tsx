@@ -5,17 +5,7 @@ import PostCard from "./components/PostCard";
 import NewPostForm from "./components/NewPostForm";
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "./contexts/AuthContext";
-
-interface Post {
-  _id: string;
-  content: string;
-  user: {
-    _id: string;
-    username: string;
-    name: string;
-  };
-  createdAt: string;
-}
+import { Post } from "./types";
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
@@ -37,6 +27,10 @@ export default function Home() {
       setLoading(false);
     }
   }, []);
+
+  const handlePostUpdated = useCallback(() => {
+    fetchPosts();
+  }, [fetchPosts]);
 
   useEffect(() => {
     if (!authLoading && user) {
@@ -77,7 +71,7 @@ export default function Home() {
         </Typography>
         <NewPostForm />
         {posts.map((post) => (
-          <PostCard key={post._id} post={post} />
+          <PostCard key={post._id} post={post} onPostUpdated={handlePostUpdated} />
         ))}
       </Box>
     </Box>

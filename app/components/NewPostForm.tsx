@@ -2,6 +2,7 @@
 import { useState } from "react";
 import { Box, TextField, Button } from "@mui/material";
 import { useAuth } from '../contexts/AuthContext';
+import { toast } from "react-toastify";
 
 export default function NewPostForm() {
   const [content, setContent] = useState("");
@@ -19,6 +20,7 @@ export default function NewPostForm() {
       });
       
       if (response.ok) {
+        toast.success('Post is created')
         console.log("Post created successfully");
         setContent("");
         // Trigger a re-render of the parent component
