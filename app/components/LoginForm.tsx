@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Container, Link as MuiLink } from '@mui/material';
+import { Box, TextField, Button, Typography, Container } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -27,17 +27,11 @@ const LoginForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Login successful
         toast.success('Login successful!');
         console.log('Login successful:', data.user);
-        
-        // Update the auth context with the user data
         login(data.user);
-        
-        // Redirect to the home page
         router.push('/');
       } else {
-        // Login failed, display error message
         toast.error(data.message || 'Login failed');
         setError(data.message || 'Login failed');
       }
@@ -98,10 +92,10 @@ const LoginForm = () => {
             </Typography>
           )}
           <Box sx={{ textAlign: 'center' }}>
-            <Link href="/register" passHref>
-              <MuiLink variant="body2">
+            <Link href="/register" style={{ textDecoration: 'none' }}>
+              <Typography variant="body2" sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
                 {"Don't have an account? Register here"}
-              </MuiLink>
+              </Typography>
             </Link>
           </Box>
         </Box>

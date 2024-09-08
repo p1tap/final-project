@@ -16,9 +16,6 @@ const RegisterPage = () => {
             alignItems: 'center',
           }}
         >
-          <Typography component="h1" variant="h5">
-            Register
-          </Typography>
           <RegisterForm />
         </Box>
       </Container>

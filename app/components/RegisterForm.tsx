@@ -1,8 +1,10 @@
 "use client";
+
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Container } from '@mui/material';
+import { Box, Typography, TextField, Button, Container, Link as MuiLink } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
+import Link from 'next/link';
 
 const RegisterForm = () => {
   const [username, setUsername] = useState('');
@@ -25,11 +27,9 @@ const RegisterForm = () => {
       const data = await response.json();
 
       if (response.ok) {
-        // Registration successful, redirect to login page
         toast.success('Registration successful! Please log in.');
         router.push('/login');
       } else {
-        // Registration failed, display error message
         toast.error(data.message || 'Registration failed');
         setError(data.message || 'Registration failed');
       }
@@ -101,6 +101,13 @@ const RegisterForm = () => {
               {error}
             </Typography>
           )}
+          <Box sx={{ textAlign: 'center', mt: 2 }}>
+          <Link href="/login" style={{ textDecoration: 'none' }}>
+            <Typography variant="body2" sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
+              Already have an account? Sign in here
+            </Typography>
+          </Link>
+        </Box>
         </Box>
       </Box>
     </Container>
