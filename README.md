@@ -1,19 +1,30 @@
-solo final project social media web/app 
-6510190 Peerapat Thubthimthong
+# Social Media Web App
 
-Project Description
-  A simple social media app that users can post and comment and like on posts.
-  Edit profile, see users' profile and user can edit posts.
-  - (implemented) Self implemented Auth 
-  - (implemented) User can register and login
-  - (implemented) User can post and leave comments or likes on posts
-  - (implemented) User can edit/delete posts
-  - (to implement) User can edit/delete comments
-  - (to implement) User can navigate through user's profile.
-  - (to implement) User can edit user profile
-  - (to implement) User profile will consist of user profile description and user's posts.
+## Project Information
+- **Course:** 6510190
+- **Student:** Peerapat Thubthimthong
+- **Project Type:** Solo Final Project
 
-Style components    : MUI
-Database            : MongoDB (mongoose)
-Authentification    : Self-implemented Auth
-Password Encryption : bcryptjs
+## Project Description
+This is a simple social media app where users can post, comment, and like posts. Users can also edit their profiles, view other users' profiles, and edit their own posts.
+
+### Features
+#### Implemented
+- [x] Self-implemented Authentication
+- [x] User registration and login
+- [x] Create posts
+- [x] Leave comments on posts
+- [x] Like posts
+- [x] Edit/delete posts
+
+#### To Be Implemented
+- [ ] Edit/delete comments
+- [ ] Navigate through user profiles
+- [ ] Edit user profiles
+- [ ] User profile with description and user's posts
+
+## Tech Stack
+- **Style Components:** Material-UI (MUI)
+- **Database:** MongoDB (mongoose)
+- **Authentication:** Self-implemented
+- **Password Encryption:** bcryptjs
