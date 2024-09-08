@@ -1,12 +1,11 @@
-// app/components/NewPostForm.tsx
 "use client";
 import { useState } from "react";
 import { Box, TextField, Button } from "@mui/material";
-import { useRouter } from 'next/navigation';
+import { useAuth } from '../contexts/AuthContext';
 
 export default function NewPostForm() {
   const [content, setContent] = useState("");
-  const router = useRouter();
+  const { user } = useAuth();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -16,14 +15,20 @@ export default function NewPostForm() {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ content, userId: "placeholder-user-id" }), // Replace with actual user ID when auth is implemented
+        body: JSON.stringify({ content, userId: user?.id }),
       });
+      
       if (response.ok) {
+        console.log("Post created successfully");
         setContent("");
-        router.refresh(); // Refresh the page to show the new post
+        // Trigger a re-render of the parent component
+        window.dispatchEvent(new CustomEvent('newpost'));
+      } else {
+        const errorData = await response.json();
+        console.error("Failed to create post:", errorData);
       }
     } catch (error) {
-      console.error("Failed to create post:", error);
+      console.error("Error creating post:", error);
     }
   };
 

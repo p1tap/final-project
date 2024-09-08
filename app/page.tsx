@@ -1,13 +1,11 @@
-// app/page.tsx
 "use client";
 import { Box, Typography, CircularProgress } from "@mui/material";
 import Header from "./components/Header";
 import PostCard from "./components/PostCard";
 import NewPostForm from "./components/NewPostForm";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "./contexts/AuthContext";
 
-// Define the Post type
 interface Post {
   _id: string;
   content: string;
@@ -24,25 +22,39 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { isLoading: authLoading, user } = useAuth();
 
-  useEffect(() => {
-    const fetchPosts = async () => {
-      try {
-        const response = await fetch('/api/posts');
-        const data = await response.json();
-        if (data.success) {
-          setPosts(data.data);
-        }
-      } catch (error) {
-        console.error('Failed to fetch posts:', error);
-      } finally {
-        setLoading(false);
+  const fetchPosts = useCallback(async () => {
+    try {
+      console.log("Fetching posts...");
+      const response = await fetch('/api/posts');
+      const data = await response.json();
+      if (data.success) {
+        console.log("Fetched posts:", data.data);
+        setPosts(data.data);
       }
-    };
+    } catch (error) {
+      console.error('Failed to fetch posts:', error);
+    } finally {
+      setLoading(false);
+    }
+  }, []);
 
+  useEffect(() => {
     if (!authLoading && user) {
       fetchPosts();
     }
-  }, [authLoading, user]);
+  }, [authLoading, user, fetchPosts]);
+
+  useEffect(() => {
+    const handleNewPost = () => {
+      fetchPosts();
+    };
+
+    window.addEventListener('newpost', handleNewPost);
+
+    return () => {
+      window.removeEventListener('newpost', handleNewPost);
+    };
+  }, [fetchPosts]);
 
   if (authLoading || loading) {
     return (

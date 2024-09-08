@@ -7,12 +7,15 @@
   --foreground: #171717;
 }
 
+/* Remove or comment out the media query for dark mode */
+/*
 @media (prefers-color-scheme: dark) {
   :root {
     --background: #0a0a0a;
     --foreground: #ededed;
   }
 }
+*/
 
 body {
   color: var(--foreground);
