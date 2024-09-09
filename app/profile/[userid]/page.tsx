@@ -1,55 +1,51 @@
-import { notFound } from 'next/navigation';
-import dbConnect from '@/lib/dbConnect';
-import User from '@/models/User';
-import Post from '@/models/Post';
-import Like from '@/models/Like';  // Add this import
+"use client";
+
+import React, { useEffect, useState } from 'react';
+import { useParams } from 'next/navigation';
 import Header from '@/app/components/Header';
-import { Box, Typography, Container, Avatar, Paper, Card, CardContent, IconButton } from '@mui/material';
+import CommentSection from '@/app/components/CommentSection';
+import { Box, Typography, Container, Avatar, Paper, Card, CardContent, IconButton, CircularProgress } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Post as PostType } from '@/app/types';
 
-async function getUser(userId: string) {
-  if (!userId) {
-    console.error("User ID is undefined");
-    notFound();
-  }
-  await dbConnect();
-  const user = await User.findById(userId);
-  if (!user) {
-    console.error("User not found in database");
-    notFound();
-  }
-  return user;
-}
+export default function ProfilePage() {
+  const [user, setUser] = useState<any>(null);
+  const [posts, setPosts] = useState<PostType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const params = useParams();
 
-async function getUserPosts(userId: string): Promise<PostType[]> {
-  await dbConnect();
-  const posts = await Post.find({ user: userId })
-    .sort({ createdAt: -1 })
-    .populate('user', 'username name')
-    .lean();
-
-  const postsWithLikes = await Promise.all(posts.map(async (post: any) => {
-    const likeCount = await Like.countDocuments({ post: post._id });
-    return {
-      _id: post._id.toString(),
-      content: post.content,
-      user: {
-        _id: post.user._id.toString(),
-        username: post.user.username,
-        name: post.user.name
-      },
-      createdAt: post.createdAt.toISOString(),
-      updatedAt: post.updatedAt ? post.updatedAt.toISOString() : undefined,
-      likeCount: likeCount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(`/api/profile/${params.userId}`);
+        const data = await response.json();
+        if (data.success) {
+          setUser(data.data.user);
+          setPosts(data.data.posts);
+        } else {
+          throw new Error(data.error);
+        }
+      } catch (error) {
+        console.error('Error fetching data:', error);
+      } finally {
+        setLoading(false);
+      }
     };
-  }));
-  return postsWithLikes;
-}
 
-export default async function ProfilePage({ params }: { params: { userId: string } }) {
-  const user = await getUser(params.userId);
-  const posts = await getUserPosts(params.userId);
+    fetchData();
+  }, [params.userId]);
+
+  if (loading) {
+    return (
+      <Box display="flex" justifyContent="center" alignItems="center" minHeight="100vh">
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (!user) {
+    return <Typography>User not found</Typography>;
+  }
 
   return (
     <Box>
@@ -78,6 +74,7 @@ export default async function ProfilePage({ params }: { params: { userId: string
                 <Typography variant="caption" color="text.secondary">
                   Posted on: {new Date(post.createdAt).toLocaleString()}
                 </Typography>
+                <CommentSection postId={post._id} />
               </CardContent>
             </Card>
           ))

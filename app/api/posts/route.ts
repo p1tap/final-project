@@ -1,55 +1,35 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Post from "@/models/Post";
+import Like from "@/models/Like";
 
-export async function GET() {
+export async function GET(request: Request) {
+  await dbConnect();
+  const { searchParams } = new URL(request.url);
+  const userId = searchParams.get("userId");
+
   try {
-    await dbConnect();
+    let query = {};
+    if (userId) {
+      query = { user: userId };
+    }
 
-    const posts = await Post.find()
+    const posts = await Post.find(query)
       .populate("user", "username name")
       .sort({ createdAt: -1 })
       .limit(50);
     
-    console.log("Fetched posts:", posts);
-    return NextResponse.json({ success: true, data: posts });
+    const postsWithLikes = await Promise.all(posts.map(async (post) => {
+      const likeCount = await Like.countDocuments({ post: post._id });
+      return {
+        ...post.toObject(),
+        likeCount,
+      };
+    }));
+
+    return NextResponse.json({ success: true, data: postsWithLikes });
   } catch (error) {
     console.error("Failed to fetch posts:", error);
-    if (error instanceof Error) {
-      return NextResponse.json({ success: false, error: error.message }, { status: 500 });
-    }
     return NextResponse.json({ success: false, error: "An unknown error occurred" }, { status: 500 });
-  }
-}
-
-
-export async function POST(request: Request) {
-  await dbConnect();
-  
-  try {
-    const body = await request.json();
-    console.log("Received data in POST /api/posts:", body);
-
-    const { userId, content } = body;
-
-    if (!userId) {
-      console.log("Missing userId");
-      return NextResponse.json({ success: false, error: "Missing userId" }, { status: 400 });
-    }
-
-    if (!content) {
-      console.log("Missing content");
-      return NextResponse.json({ success: false, error: "Missing content" }, { status: 400 });
-    }
-
-    const post = await Post.create({ user: userId, content });
-    console.log("Created post:", post);
-    return NextResponse.json({ success: true, data: post });
-  } catch (error) {
-    console.error("Post creation error:", error);
-    if (error instanceof Error) {
-      return NextResponse.json({ success: false, error: "Post creation failed", details: error.message }, { status: 400 });
-    }
-    return NextResponse.json({ success: false, error: "Post creation failed" }, { status: 400 });
   }
 }
