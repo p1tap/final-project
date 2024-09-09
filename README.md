@@ -16,9 +16,9 @@ This is a simple social media app where users can post, comment, and like posts.
 - [x] Leave comments on posts
 - [x] Like posts
 - [x] Edit/delete posts
+- [x] Edit/delete comments
 
 #### To Be Implemented
-- [ ] Edit/delete comments
 - [ ] Navigate through user profiles
 - [ ] Edit user profiles
 - [ ] User profile with description and user's posts
