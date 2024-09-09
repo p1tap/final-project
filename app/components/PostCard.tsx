@@ -54,6 +54,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
       if (data.success) {
         setLiked(data.liked);
         setLikeCount(prev => data.liked ? prev + 1 : prev - 1);
+      } else {
+        console.error('Failed to update like:', data.error);
       }
     } catch (error) {
       console.error('Failed to like/unlike post:', error);

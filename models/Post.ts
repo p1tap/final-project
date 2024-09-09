@@ -1,4 +1,3 @@
-// models/Post.ts
 import mongoose from "mongoose";
 import "./User";
 

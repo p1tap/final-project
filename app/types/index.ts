@@ -10,4 +10,5 @@ export interface Post {
   };
   createdAt: string;
   updatedAt?: string;
+  likeCount: number;
 }

@@ -1,3 +1,5 @@
+// File: app/api/likes/route.ts
+
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Like from "@/models/Like";
@@ -8,12 +10,23 @@ export async function POST(request: Request) {
 
   try {
     const existingLike = await Like.findOne({ user: userId, post: postId });
+
     if (existingLike) {
+      // User has already liked, so remove the like
       await Like.findByIdAndDelete(existingLike._id);
-      return NextResponse.json({ success: true, liked: false, message: "Like removed" });
+      return NextResponse.json({ 
+        success: true, 
+        liked: false,
+        message: "Like removed successfully"
+      });
     } else {
-      const like = await Like.create({ user: userId, post: postId });
-      return NextResponse.json({ success: true, liked: true, data: like });
+      // User hasn't liked, so add the like
+      const newLike = await Like.create({ user: userId, post: postId });
+      return NextResponse.json({ 
+        success: true, 
+        liked: true,
+        message: "Like added successfully"
+      });
     }
   } catch (error) {
     console.error("Like operation failed:", error);
@@ -35,9 +48,9 @@ export async function GET(request: Request) {
     const likeCount = await Like.countDocuments({ post: postId });
     let userLiked = false;
     if (userId) {
-      const existingLike = await Like.exists({ user: userId, post: postId });
-      userLiked = existingLike !== null;
+      userLiked = await Like.exists({ user: userId, post: postId }) !== null;
     }
+
     return NextResponse.json({ success: true, data: { count: likeCount, userLiked } });
   } catch (error) {
     console.error("Failed to fetch like information:", error);
