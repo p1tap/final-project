@@ -17,11 +17,11 @@ This is a simple social media app where users can post, comment, and like posts.
 - [x] Like posts
 - [x] Edit/delete posts
 - [x] Edit/delete comments
+- [X] User profile with description and user's posts
 
 #### To Be Implemented
 - [ ] Navigate through user profiles
 - [ ] Edit user profiles
-- [ ] User profile with description and user's posts
 
 ## Tech Stack
 - **Style Components:** Material-UI (MUI)
