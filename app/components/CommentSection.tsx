@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
+import EditIcon from '@mui/icons-material/Edit';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
@@ -24,8 +25,9 @@ interface CommentSectionProps {
 const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
+  const [editingComment, setEditingComment] = useState<string | null>(null);
+  const [editContent, setEditContent] = useState('');
   const { user } = useAuth();
-
 
   useEffect(() => {
     fetchComments();
@@ -92,6 +94,42 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     }
   };
 
+  const handleEditComment = async (commentId: string) => {
+    setEditingComment(commentId);
+    const comment = comments.find(c => c._id === commentId);
+    if (comment) {
+      setEditContent(comment.content);
+    }
+  };
+
+  const handleSaveEdit = async (commentId: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}/edit`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          content: editContent,
+          userId: user?.id,
+        }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        setComments(comments.map(comment => 
+          comment._id === commentId ? { ...comment, content: editContent, updatedAt: new Date().toISOString() } : comment
+        ));
+        setEditingComment(null);
+        toast.success('Comment updated successfully');
+      } else {
+        toast.error(data.error || 'Failed to update comment');
+      }
+    } catch (error) {
+      console.error('Failed to update comment:', error);
+      toast.error('An error occurred while updating the comment');
+    }
+  };
+
   return (
     <Box>
       <Typography variant="h6">Comments</Typography>
@@ -105,6 +143,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                     {comment.user.name} (@{comment.user.username})
                   </Typography>
                   {user && user.id === comment.user._id && (
+                    <>
+                    <IconButton
+                      edge="end"
+                      aria-label="edit"
+                      onClick={() => handleEditComment(comment._id)}
+                    >
+                      <EditIcon />
+                    </IconButton>
                     <IconButton
                       edge="end"
                       aria-label="delete"
@@ -112,20 +158,39 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                     >
                       <DeleteIcon />
                     </IconButton>
+                  </>
                   )}
                 </React.Fragment>
               }
               secondary={
                 <React.Fragment>
-                  <Typography component="span" variant="body2" color="text.primary">
-                    {comment.content}
-                  </Typography>
-                  <br />
-                  <Typography component="span" variant="caption" color="text.secondary">
-                    Created: {new Date(comment.createdAt).toLocaleString()}
-                    {comment.updatedAt !== comment.createdAt && 
-                      ` (Edited: ${new Date(comment.updatedAt).toLocaleString()})`}
-                  </Typography>
+                  {editingComment === comment._id ? (
+                    // Editing interface
+                    <Box>
+                      <TextField
+                        fullWidth
+                        multiline
+                        value={editContent}
+                        onChange={(e) => setEditContent(e.target.value)}
+                        margin="normal"
+                      />
+                      <Button onClick={() => handleSaveEdit(comment._id)}>Save</Button>
+                      <Button onClick={() => setEditingComment(null)}>Cancel</Button>
+                    </Box>
+                  ) : (
+                    // Normal comment display
+                    <>
+                      <Typography component="span" variant="body2" color="text.primary">
+                        {comment.content}
+                      </Typography>
+                      <br />
+                      <Typography component="span" variant="caption" color="text.secondary">
+                        Created: {new Date(comment.createdAt).toLocaleString()}
+                        {comment.updatedAt !== comment.createdAt && 
+                          ` (Edited: ${new Date(comment.updatedAt).toLocaleString()})`}
+                      </Typography>
+                    </>
+                  )}
                 </React.Fragment>
               }
             />
