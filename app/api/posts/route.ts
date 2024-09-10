@@ -33,3 +33,27 @@ export async function GET(request: Request) {
     return NextResponse.json({ success: false, error: "An unknown error occurred" }, { status: 500 });
   }
 }
+
+export async function POST(request: Request) {
+  await dbConnect();
+
+  try {
+    const { content, userId } = await request.json();
+
+    if (!content || !userId) {
+      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
+    }
+
+    const newPost = await Post.create({
+      content,
+      user: userId
+    });
+
+    const populatedPost = await Post.findById(newPost._id).populate("user", "username name");
+
+    return NextResponse.json({ success: true, data: populatedPost }, { status: 201 });
+  } catch (error) {
+    console.error("Failed to create post:", error);
+    return NextResponse.json({ success: false, error: "An error occurred while creating the post" }, { status: 500 });
+  }
+}
