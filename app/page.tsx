@@ -6,11 +6,14 @@ import NewPostForm from "./components/NewPostForm";
 import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "./contexts/AuthContext";
 import { Post } from "./types";
+import { useRouter } from 'next/navigation';
+
 
 export default function Home() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const { isLoading: authLoading, user } = useAuth();
+  const router = useRouter();
 
   const fetchPosts = useCallback(async () => {
     try {
@@ -32,11 +35,19 @@ export default function Home() {
     fetchPosts();
   }, [fetchPosts]);
 
+  // Fetch posts if user is logged in
   useEffect(() => {
     if (!authLoading && user) {
       fetchPosts();
     }
   }, [authLoading, user, fetchPosts]);
+
+  // Redirect to login page if user is not logged in
+  useEffect(() => {
+    if (!authLoading && !user) {
+      router.push('/login');
+    }
+  }, [authLoading, user, router]);
 
   useEffect(() => {
     const handleNewPost = () => {
@@ -56,10 +67,6 @@ export default function Home() {
         <CircularProgress />
       </Box>
     );
-  }
-
-  if (!user) {
-    return null; // or redirect to login
   }
 
   return (
