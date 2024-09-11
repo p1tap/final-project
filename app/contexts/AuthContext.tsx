@@ -7,6 +7,8 @@ type User = {
   id: string;
   username: string;
   name: string;
+  profilePicture?: string;
+  bio?: string;
 };
 
 type AuthContextType = {
@@ -14,7 +16,7 @@ type AuthContextType = {
   login: (user: User) => void;
   logout: () => void;
   isLoading: boolean;
-  updateUser: (updatedUser: Partial<User>) => void;
+  updateUser: (updates: Partial<User>) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -24,17 +26,35 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    // Check localStorage for user data on initial load
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
-      setUser(JSON.parse(storedUser));
+      const parsedUser = JSON.parse(storedUser);
+      console.log("Loaded user data from localStorage:", parsedUser);
+      if (!parsedUser.profilePicture) {
+        console.warn("Loaded user data does not contain profilePicture");
+      }
+      setUser(parsedUser);
+    } else {
+      console.log("No user data found in localStorage");
     }
     setIsLoading(false);
   }, []);
 
   const login = (userData: User) => {
-    setUser(userData);
-    localStorage.setItem('user', JSON.stringify(userData));
+    console.log("Logging in user:", userData);
+    if (!userData.profilePicture) {
+      console.warn("User data does not contain profilePicture");
+    }
+    const userToStore = {
+      id: userData.id,
+      username: userData.username,
+      name: userData.name,
+      profilePicture: userData.profilePicture,
+      bio: userData.bio
+    };
+    setUser(userToStore);
+    localStorage.setItem('user', JSON.stringify(userToStore));
+    console.log("User data stored in localStorage:", JSON.parse(localStorage.getItem('user') || '{}'));
   };
 
   const logout = () => {
@@ -42,8 +62,17 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     localStorage.removeItem('user');
   };
   
-  const updateUser = (updatedUser: Partial<User>) => {
-    setUser(prevUser => prevUser ? { ...prevUser, ...updatedUser } : null);
+  const updateUser = (updates: Partial<User>) => {
+    console.log("Updating user with:", updates);
+    setUser(currentUser => {
+      if (currentUser) {
+        const updatedUser = { ...currentUser, ...updates };
+        console.log("Updated user data:", updatedUser);
+        localStorage.setItem('user', JSON.stringify(updatedUser));
+        return updatedUser;
+      }
+      return null;
+    });
   };
 
   return (

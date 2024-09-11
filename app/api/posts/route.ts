@@ -15,9 +15,10 @@ export async function GET(request: Request) {
     }
 
     const posts = await Post.find(query)
-      .populate("user", "username name")
-      .sort({ createdAt: -1 })
-      .limit(50);
+    .populate("user", "username name profilePicture")
+    .sort({ createdAt: -1 })
+    .limit(50);
+  
     
     const postsWithLikes = await Promise.all(posts.map(async (post) => {
       const likeCount = await Like.countDocuments({ post: post._id });
@@ -49,7 +50,7 @@ export async function POST(request: Request) {
       user: userId
     });
 
-    const populatedPost = await Post.findById(newPost._id).populate("user", "username name");
+    const populatedPost = await Post.findById(newPost._id).populate("user", "username name profilePicture");
 
     return NextResponse.json({ success: true, data: populatedPost }, { status: 201 });
   } catch (error) {

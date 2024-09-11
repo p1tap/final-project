@@ -14,7 +14,7 @@ export async function GET(request: Request) {
 
   try {
     const comments = await Comment.find({ post: postId })
-      .populate("user", "username name")
+      .populate("user", "username name profilePicture") 
       .sort({ createdAt: -1 });
     return NextResponse.json({ success: true, data: comments });
   } catch (error) {
@@ -28,7 +28,7 @@ export async function POST(request: Request) {
 
   try {
     const comment = await Comment.create({ user: userId, post: postId, content });
-    const populatedComment = await comment.populate("user", "username name");
+    const populatedComment = await comment.populate("user", "username name profilePicture"); // Add profilePicture here
     return NextResponse.json({ success: true, data: populatedComment });
   } catch (error) {
     return NextResponse.json({ success: false, error: "Comment creation failed" }, { status: 400 });

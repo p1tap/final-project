@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
+import { uploadFile } from "@/lib/uploadHandler";
 
 export async function PUT(
   request: Request,
@@ -8,14 +9,26 @@ export async function PUT(
 ) {
   await dbConnect();
   const { userId } = params;
-  const { name, bio } = await request.json();
 
   try {
+    const { fields, file } = await uploadFile(request);
+
+    const updateData: any = {};
+    if (fields.name && fields.name[0]) updateData.name = fields.name[0];
+    if (fields.bio && fields.bio[0]) updateData.bio = fields.bio[0];
+
+    if (file && file.profilePicture) {
+      updateData.profilePicture = file.profilePicture[0].filepath;
+    }
+
     const updatedUser = await User.findByIdAndUpdate(
       userId,
-      { name, bio },
+      updateData,
       { new: true, runValidators: true }
     ).select('-password');
+
+    console.log("Updated user data:", updatedUser);
+
 
     if (!updatedUser) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });

@@ -12,7 +12,6 @@ import { Post } from '../types';
 import { toast } from 'react-toastify';
 import CommentSection from './CommentSection';
 
-
 interface PostCardProps {
   post: Post;
   onPostUpdated: () => void;
@@ -98,7 +97,12 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
     <Card sx={{ marginBottom: 2 }}>
       <CardContent>
         <Box display="flex" alignItems="center" mb={2}>
-          <Avatar sx={{ mr: 2 }}>{post.user.name[0]}</Avatar>
+          <Avatar 
+            src={post.user.profilePicture} 
+            sx={{ mr: 2 }}
+          >
+            {!post.user.profilePicture && post.user.name[0]}
+          </Avatar>
           <Box>
             <Typography variant="h6">{post.user.name}</Typography>
             <Typography variant="body2" color="text.secondary">

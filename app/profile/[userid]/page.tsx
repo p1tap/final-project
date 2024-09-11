@@ -63,7 +63,12 @@ export default function ProfilePage() {
       <Header />
       <Container maxWidth="md">
         <Paper elevation={3} sx={{ mt: 4, mb: 4, p: 3, textAlign: 'center' }}>
-          <Avatar sx={{ width: 100, height: 100, margin: '0 auto', mb: 2 }}>{user.name[0]}</Avatar>
+          <Avatar 
+            src={user.profilePicture || undefined} 
+            sx={{ width: 100, height: 100, margin: '0 auto', mb: 2 }}
+          >
+            {!user.profilePicture && user.name[0]}
+          </Avatar>
           {isEditing ? (
             <EditProfileForm user={user} onUpdateSuccess={handleUpdateSuccess} />
           ) : (

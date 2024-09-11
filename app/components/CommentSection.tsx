@@ -1,6 +1,6 @@
 "use client";
 import React, { useState, useEffect } from 'react';
-import { Box, Typography, TextField, Button, List, ListItem, ListItemText, IconButton } from '@mui/material';
+import { Box, Typography, TextField, Button, List, ListItem, ListItemText, IconButton, Avatar } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -15,6 +15,7 @@ interface Comment {
     _id: string; 
     username: string;
     name: string;
+    profilePicture?: string;
   };
   createdAt: string;
   updatedAt: string;
@@ -175,6 +176,12 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       <List>
         {comments.map((comment) => (
           <ListItem key={comment._id} alignItems="flex-start">
+            <Avatar 
+              src={comment.user.profilePicture} 
+              sx={{ mr: 2 }}
+            >
+              {!comment.user.profilePicture && comment.user.name[0]}
+            </Avatar>
             <ListItemText
               primary={
                 <React.Fragment>

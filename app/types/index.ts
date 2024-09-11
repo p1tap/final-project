@@ -19,6 +19,7 @@ export interface Post {
     _id: string;
     username: string;
     name: string;
+    profilePicture?: string;
   };
   createdAt: string;
   updatedAt?: string;

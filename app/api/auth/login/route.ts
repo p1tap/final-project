@@ -31,7 +31,13 @@ export async function POST(request: Request) {
     return NextResponse.json({ 
       success: true, 
       message: 'Login successful',
-      user: { id: user._id, username: user.username, name: user.name }
+      user: { 
+        id: user._id, 
+        username: user.username, 
+        name: user.name,
+        profilePicture: user.profilePicture,
+        bio: user.bio
+      }
     });
 
   } catch (error) {
