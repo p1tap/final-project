@@ -9,7 +9,6 @@
 This is a simple social media app where users can post, comment, and like posts. Users can also edit their profiles, view other users' profiles, and edit their own posts.
 
 ### Features
-#### Implemented
 - [x] Self-implemented Authentication
 - [x] User registration and login
 - [x] Create posts
@@ -19,10 +18,7 @@ This is a simple social media app where users can post, comment, and like posts.
 - [x] Edit/delete comments
 - [X] User profile with description and user's posts
 - [X] Navigate through user profiles
-
-
-#### To Be Implemented
-- [ ] Edit user profiles
+- [X] Edit user profiles
 
 ## Tech Stack
 - **Style Components:** Material-UI (MUI)
