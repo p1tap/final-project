@@ -14,6 +14,7 @@ type AuthContextType = {
   login: (user: User) => void;
   logout: () => void;
   isLoading: boolean;
+  updateUser: (updatedUser: Partial<User>) => void;
 };
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -40,9 +41,13 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setUser(null);
     localStorage.removeItem('user');
   };
+  
+  const updateUser = (updatedUser: Partial<User>) => {
+    setUser(prevUser => prevUser ? { ...prevUser, ...updatedUser } : null);
+  };
 
   return (
-    <AuthContext.Provider value={{ user, login, logout, isLoading }}>
+    <AuthContext.Provider value={{ user, login, logout, isLoading, updateUser }}>
       {children}
     </AuthContext.Provider>
   );
