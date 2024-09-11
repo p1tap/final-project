@@ -3,6 +3,8 @@ import React, { useState, useEffect } from 'react';
 import { Box, Typography, TextField, Button, List, ListItem, ListItemText, IconButton } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
+import FavoriteIcon from '@mui/icons-material/Favorite';
+import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 
@@ -10,7 +12,7 @@ interface Comment {
   _id: string;
   content: string;
   user: {
-    _id: string;  // Add this line
+    _id: string; 
     username: string;
     name: string;
   };
@@ -23,6 +25,7 @@ interface CommentSectionProps {
 }
 
 const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
+  const [commentLikes, setCommentLikes] = useState<Record<string, { count: number, userLiked: boolean }>>({});
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
   const [editingComment, setEditingComment] = useState<string | null>(null);
@@ -32,6 +35,11 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   useEffect(() => {
     fetchComments();
   }, [postId]);
+
+  useEffect(() => {
+    // Fetch initial like status and count for each comment
+    comments.forEach(comment => fetchCommentLikes(comment._id));
+  }, [comments]);
 
   const fetchComments = async () => {
     try {
@@ -130,6 +138,37 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     }
   };
 
+  const fetchCommentLikes = async (commentId: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}/likes?userId=${user?.id}`);
+      const data = await response.json();
+      if (data.success) {
+        setCommentLikes(prev => ({
+          ...prev,
+          [commentId]: { count: data.data.count, userLiked: data.data.userLiked }
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch comment likes:', error);
+    }
+  };
+
+  const handleCommentLike = async (commentId: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}/likes`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userId: user?.id }),
+      });
+      const data = await response.json();
+      if (data.success) {
+        fetchCommentLikes(commentId);
+      }
+    } catch (error) {
+      console.error('Failed to like/unlike comment:', error);
+    }
+  };
+
   return (
     <Box>
       <Typography variant="h6">Comments</Typography>
@@ -188,6 +227,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                         Created: {new Date(comment.createdAt).toLocaleString()}
                         {comment.updatedAt !== comment.createdAt && 
                           ` (Edited: ${new Date(comment.updatedAt).toLocaleString()})`}
+                      </Typography>
+                       {/* Like button and count */}
+                       <IconButton onClick={() => handleCommentLike(comment._id)} size="small">
+                        {commentLikes[comment._id]?.userLiked ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon />}
+                      </IconButton>
+                      <Typography variant="caption" component="span">
+                        {commentLikes[comment._id]?.count || 0} likes
                       </Typography>
                     </>
                   )}
