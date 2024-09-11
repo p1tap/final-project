@@ -16,3 +16,4 @@ This is a simple social media app where users can post, comment, and like posts.
 - **Database:** MongoDB (mongoose)
 - **Authentication:** Self-implemented
 - **Password Encryption:** bcryptjs
+- **Image Upload:** Cloudinary
