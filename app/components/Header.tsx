@@ -1,6 +1,7 @@
 "use client";
-import React, { useEffect } from 'react';
-import { AppBar, Toolbar, Typography, Button, Box, Avatar } from '@mui/material';
+import React, { useState, useEffect } from 'react';
+import { AppBar, Toolbar, Typography, Button, Box, Avatar, TextField, InputAdornment } from '@mui/material';
+import SearchIcon from '@mui/icons-material/Search';
 import Link from 'next/link';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter } from 'next/navigation';
@@ -8,30 +9,22 @@ import { useRouter } from 'next/navigation';
 const Header = () => {
   const { user, logout, updateUser } = useAuth();
   const router = useRouter();
-
-  useEffect(() => {
-    console.log("Header component rendered. User data:", user);
-    if (user) {
-      console.log("User profilePicture:", user.profilePicture);
-    }
-  }, [user]);
+  const [searchQuery, setSearchQuery] = useState('');
 
   const handleLogout = () => {
     logout();
     router.push('/login');
   };
 
+  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+    if (e.key === 'Enter') {
+      router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
+    }
+  };
+
   if (!user) {
-    console.log("No user data in Header. Rendering null.");
     return null;
   }
-
-  console.log("Rendering Header with user data:", {
-    id: user.id,
-    name: user.name,
-    username: user.username,
-    profilePicture: user.profilePicture
-  });
 
   return (
     <AppBar position="static">
@@ -52,6 +45,20 @@ const Header = () => {
             </Typography>
           </Link>
         </Typography>
+        <TextField
+          placeholder="Search posts and users..."
+          value={searchQuery}
+          onChange={(e) => setSearchQuery(e.target.value)}
+          onKeyPress={handleSearch}
+          sx={{ mr: 2, backgroundColor: 'white', borderRadius: 1 }}
+          InputProps={{
+            startAdornment: (
+              <InputAdornment position="start">
+                <SearchIcon />
+              </InputAdornment>
+            ),
+          }}
+        />
         <Box sx={{ display: 'flex', alignItems: 'center' }}>
           <Typography sx={{ mr: 2 }} component="span">Welcome, {user.name}</Typography>
           <Link href={`/profile/${user.id}`} passHref>
@@ -75,6 +82,6 @@ const Header = () => {
       </Toolbar>
     </AppBar>
   );
-};
+}
 
 export default Header;

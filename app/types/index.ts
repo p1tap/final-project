@@ -26,3 +26,11 @@ export interface Post {
   likeCount: number;
   comments?: Comment[];
 }
+
+export interface User {
+  _id: string;
+  username: string;
+  name: string;
+  profilePicture?: string;
+  bio?: string;
+}
