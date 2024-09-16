@@ -3,6 +3,22 @@ import dbConnect from '@/lib/dbConnect';
 import User from '@/models/User';
 import Post from '@/models/Post';
 import Like from '@/models/Like';
+import { IPost } from '@/models/Post';
+import { IUser } from '@/models/User';
+import { Types } from 'mongoose';
+
+interface PostWithLikes {
+  _id: string;
+  content: string;
+  user: {
+    _id: string;
+    username: string;
+    name: string;
+  };
+  createdAt: string;
+  updatedAt?: string;
+  likeCount: number;
+}
 
 export async function GET(
   request: Request,
@@ -12,7 +28,7 @@ export async function GET(
   const { userId } = params;
 
   try {
-    const user = await User.findById(userId).select('-password');
+    const user = await User.findById(userId).select('-password').lean() as Omit<IUser, 'password'>;
     if (!user) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
     }
@@ -20,9 +36,9 @@ export async function GET(
     const posts = await Post.find({ user: userId })
       .sort({ createdAt: -1 })
       .populate('user', 'username name')
-      .lean();
+      .lean() as (IPost & { user: { _id: Types.ObjectId; username: string; name: string } })[];
 
-    const postsWithLikes = await Promise.all(posts.map(async (post: any) => {
+    const postsWithLikes: PostWithLikes[] = await Promise.all(posts.map(async (post) => {
       const likeCount = await Like.countDocuments({ post: post._id });
       return {
         _id: post._id.toString(),

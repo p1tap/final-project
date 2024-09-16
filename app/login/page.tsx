@@ -1,6 +1,6 @@
 // app/login/page.tsx
 import LoginForm from '../components/LoginForm';
-import { Box, Typography, Container } from '@mui/material';
+import { Box, Container } from '@mui/material';
 
 export default function LoginPage() {
   return (

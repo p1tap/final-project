@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 import "./User";
+import { IUser } from "./User";
 
 const PostSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
@@ -12,5 +13,13 @@ PostSchema.pre('findOneAndUpdate', function(next) {
   this.set({ updatedAt: new Date() });
   next();
 });
+
+export interface IPost {
+  _id: mongoose.Types.ObjectId;
+  user: mongoose.Types.ObjectId | IUser;
+  content: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
 
 export default mongoose.models.Post || mongoose.model("Post", PostSchema);

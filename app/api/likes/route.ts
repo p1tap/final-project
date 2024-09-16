@@ -20,8 +20,6 @@ export async function POST(request: Request) {
         message: "Like removed successfully"
       });
     } else {
-      // User hasn't liked, so add the like
-      const newLike = await Like.create({ user: userId, post: postId });
       return NextResponse.json({ 
         success: true, 
         liked: true,

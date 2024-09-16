@@ -1,4 +1,3 @@
-import { IncomingForm, Fields, Files } from 'formidable';
 import { v2 as cloudinary } from 'cloudinary';
 
 cloudinary.config({ 
