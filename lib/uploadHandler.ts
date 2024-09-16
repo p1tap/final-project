@@ -6,10 +6,27 @@ cloudinary.config({
   api_secret: process.env.CLOUDINARY_API_SECRET 
 });
 
-export const uploadFile = async (req: Request): Promise<{ fields: { name?: string[], bio?: string[] }, file: any }> => {
+// Define more specific types
+interface UploadFields {
+  name?: string[];
+  bio?: string[];
+}
+
+interface UploadFile {
+  profilePicture?: {
+    filepath: string;
+  }[];
+}
+
+interface UploadResult {
+  fields: UploadFields;
+  file: UploadFile;
+}
+
+export const uploadFile = async (req: Request): Promise<UploadResult> => {
   const formData = await req.formData();
-  const fields: { name?: string[], bio?: string[] } = {};
-  let file: any = {};
+  const fields: UploadFields = {};
+  const file: UploadFile = {};
 
   for (const [key, value] of formData.entries()) {
     if (key === 'name' || key === 'bio') {
@@ -17,7 +34,7 @@ export const uploadFile = async (req: Request): Promise<{ fields: { name?: strin
     } else if (key === 'profilePicture' && value instanceof Blob) {
       const buffer = Buffer.from(await value.arrayBuffer());
       try {
-        const result = await new Promise((resolve, reject) => {
+        const result = await new Promise<any>((resolve, reject) => {
           cloudinary.uploader.upload_stream(
             { folder: 'profile_pictures' },
             (error, result) => {
@@ -26,11 +43,9 @@ export const uploadFile = async (req: Request): Promise<{ fields: { name?: strin
             }
           ).end(buffer);
         });
-        file = {
-          profilePicture: [{
-            filepath: (result as any).secure_url
-          }]
-        };
+        file.profilePicture = [{
+          filepath: result.secure_url
+        }];
       } catch (uploadError) {
         console.error('Error uploading to Cloudinary:', uploadError);
         throw uploadError;

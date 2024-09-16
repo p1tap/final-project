@@ -3,6 +3,12 @@ import dbConnect from "@/lib/dbConnect";
 import User from "@/models/User";
 import { uploadFile } from "@/lib/uploadHandler";
 
+interface UpdateData {
+  name?: string;
+  bio?: string;
+  profilePicture?: string;
+}
+
 export async function PUT(
   request: Request,
   { params }: { params: { userId: string } }
@@ -13,7 +19,8 @@ export async function PUT(
   try {
     const { fields, file } = await uploadFile(request);
 
-    const updateData: any = {};
+    const updateData: UpdateData = {};
+    
     if (fields.name && fields.name[0]) updateData.name = fields.name[0];
     if (fields.bio && fields.bio[0]) updateData.bio = fields.bio[0];
 
