@@ -18,7 +18,7 @@ export default function Home() {
   const fetchPosts = useCallback(async () => {
     try {
       console.log("Fetching posts...");
-      const response = await fetch('/api/posts');
+      const response = await fetch(`/api/posts?userId=${user?.id}`);
       const data = await response.json();
       if (data.success) {
         console.log("Fetched posts:", data.data);
@@ -29,7 +29,7 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   const handlePostUpdated = useCallback(() => {
     fetchPosts();

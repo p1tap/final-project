@@ -8,6 +8,8 @@ export async function GET(request: Request) {
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId");
 
+  console.log(`GET /api/posts - Query params:`, { userId });
+
   try {
     let query = {};
     if (userId) {
@@ -15,19 +17,22 @@ export async function GET(request: Request) {
     }
 
     const posts = await Post.find(query)
-    .populate("user", "username name profilePicture")
-    .sort({ createdAt: -1 })
-    .limit(50);
-  
+      .populate("user", "username name profilePicture")
+      .sort({ createdAt: -1 })
+      .limit(50);
     
     const postsWithLikes = await Promise.all(posts.map(async (post) => {
       const likeCount = await Like.countDocuments({ post: post._id });
+      const userLiked = userId ? await Like.exists({ post: post._id, user: userId }) !== null : false;
+      console.log(`Post ${post._id} like info:`, { likeCount, userLiked });
       return {
         ...post.toObject(),
         likeCount,
+        userLiked,
       };
     }));
 
+    console.log(`GET /api/posts - Returning ${postsWithLikes.length} posts`);
     return NextResponse.json({ success: true, data: postsWithLikes });
   } catch (error) {
     console.error("Failed to fetch posts:", error);
