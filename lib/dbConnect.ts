@@ -6,10 +6,6 @@ import "../models/Post";
 import "../models/Comment";
 import "../models/Like";
 
-declare global {
-  var mongoose: any;
-}
-
 const MONGODB_URI = process.env.MONGODB_URI!;
 
 if (!MONGODB_URI) {
@@ -18,15 +14,10 @@ if (!MONGODB_URI) {
   );
 }
 
-let cached = global.mongoose;
-
-if (!cached) {
-  cached = global.mongoose = { conn: null, promise: null };
-}
+let cached: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } = { conn: null, promise: null };
 
 async function dbConnect() {
   if (cached.conn) {
-    console.log("Using existing database connection");
     return cached.conn;
   }
 
@@ -36,7 +27,6 @@ async function dbConnect() {
     };
 
     cached.promise = mongoose.connect(MONGODB_URI, opts).then((mongoose) => {
-      console.log("New database connection established");
       return mongoose;
     });
   }
@@ -45,7 +35,6 @@ async function dbConnect() {
     cached.conn = await cached.promise;
   } catch (e) {
     cached.promise = null;
-    console.error("Failed to connect to database:", e);
     throw e;
   }
 

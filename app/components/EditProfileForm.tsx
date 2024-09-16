@@ -4,7 +4,7 @@ import React, { useState, useRef } from 'react';
 import { Box, TextField, Button, Avatar } from '@mui/material';
 import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
-
+import EditIcon from '@mui/icons-material/Edit';
 
 interface EditProfileFormProps {
   user: {
@@ -65,14 +65,48 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ user, onUpdateSuccess
       toast.error('An error occurred while updating the profile');
     }
   };
-  
+
   return (
     <Box component="form" onSubmit={handleSubmit} sx={{ mt: 2 }}>
-      <Avatar
-        src={previewUrl || undefined}
-        sx={{ width: 100, height: 100, margin: '0 auto', mb: 2, cursor: 'pointer' }}
+      <Box
+        sx={{
+          position: 'relative',
+          width: 100,
+          height: 100,
+          margin: '0 auto',
+          mb: 2,
+          cursor: 'pointer',
+        }}
         onClick={() => fileInputRef.current?.click()}
-      />
+      >
+        <Avatar
+          src={previewUrl || undefined}
+          sx={{ width: '100%', height: '100%' }}
+        >
+          {!previewUrl && user.name[0]}
+        </Avatar>
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            backgroundColor: 'rgba(0, 0, 0, 0.5)',
+            display: 'flex',
+            justifyContent: 'center',
+            alignItems: 'center',
+            opacity: 0,
+            transition: 'opacity 0.3s',
+            borderRadius: '50%', // Make the hover effect circular
+            '&:hover': {
+              opacity: 1,
+            },
+          }}
+        >
+          <EditIcon sx={{ color: 'white' }} />
+        </Box>
+      </Box>
       <input
         type="file"
         ref={fileInputRef}

@@ -9,7 +9,7 @@ import { Box, Typography, Container, Avatar, Paper, Card, CardContent, IconButto
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Post as PostType } from '@/app/types';
 import { useAuth } from '@/app/contexts/AuthContext';
-
+import EditIcon from '@mui/icons-material/Edit';
 
 export default function ProfilePage() {
   const [user, setUser] = useState<any>(null);
@@ -63,16 +63,69 @@ export default function ProfilePage() {
       <Header />
       <Container maxWidth="md">
         <Paper elevation={3} sx={{ mt: 4, mb: 4, p: 3, textAlign: 'center' }}>
-          <Avatar 
-            src={user.profilePicture || undefined} 
-            sx={{ width: 100, height: 100, margin: '0 auto', mb: 2 }}
-          >
-            {!user.profilePicture && user.name[0]}
-          </Avatar>
           {isEditing ? (
             <EditProfileForm user={user} onUpdateSuccess={handleUpdateSuccess} />
           ) : (
             <>
+              <Box
+                sx={{
+                  position: 'relative',
+                  width: 100,
+                  height: 100,
+                  margin: '0 auto',
+                  mb: 2,
+                  cursor: isOwnProfile ? 'pointer' : 'default',
+                }}
+                onClick={() => isOwnProfile && setIsEditing(true)}
+              >
+                <Avatar 
+                  src={user.profilePicture || undefined} 
+                  sx={{ width: '100%', height: '100%' }}
+                >
+                  {!user.profilePicture && user.name[0]}
+                </Avatar>
+                {isOwnProfile && (
+                  <>
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        top: 0,
+                        left: 0,
+                        width: '100%',
+                        height: '100%',
+                        backgroundColor: 'rgba(0, 0, 0, 0.5)',
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                        opacity: 0,
+                        transition: 'opacity 0.3s',
+                        borderRadius: '50%', // Make the hover effect circular
+                        '&:hover': {
+                          opacity: 1,
+                        },
+                      }}
+                    >
+                      <EditIcon sx={{ color: 'white' }} />
+                    </Box>
+                    <Box
+                      sx={{
+                        position: 'absolute',
+                        bottom: 0,
+                        right: 0,
+                        backgroundColor: 'primary.main',
+                        borderRadius: '50%',
+                        width: 24,
+                        height: 24,
+                        display: 'flex',
+                        justifyContent: 'center',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <EditIcon sx={{ color: 'white', fontSize: 16 }} />
+                    </Box>
+                  </>
+                )}
+              </Box>
               <Typography variant="h4">{user.name}</Typography>
               <Typography variant="subtitle1" color="text.secondary">@{user.username}</Typography>
               <Typography variant="body1" sx={{ mt: 2 }}>{user.bio || "No bio available"}</Typography>
