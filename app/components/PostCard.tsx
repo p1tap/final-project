@@ -1,5 +1,5 @@
 "use client";
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import { useEffect } from 'react';
 import { Card, CardContent, Typography, Avatar, Box, IconButton, Button } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -23,14 +23,10 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
 
-  useEffect(() => {
-    console.log(`PostCard mounted for post ${post._id}. Initial state:`, { liked, likeCount });
-    fetchLikeInfo();
-  }, [post._id, user?.id]);
-
-  const fetchLikeInfo = async () => {
+  const fetchLikeInfo = useCallback(async () => {
+    if (!user?.id) return;
     try {
-      const response = await fetch(`/api/likes?postId=${post._id}&userId=${user?.id}`);
+      const response = await fetch(`/api/likes?postId=${post._id}&userId=${user.id}`);
       const data = await response.json();
       console.log(`Fetched like info for post ${post._id}:`, data);
       if (data.success) {
@@ -41,7 +37,13 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
     } catch (error) {
       console.error('Failed to fetch like info:', error);
     }
-  };
+  }, [post._id, user?.id]);
+
+  useEffect(() => {
+    console.log(`PostCard mounted for post ${post._id}. Initial state:`, { liked, likeCount });
+    fetchLikeInfo();
+  }, [post._id, user?.id, fetchLikeInfo]);
+
 
   const handleLike = async () => {
     try {
