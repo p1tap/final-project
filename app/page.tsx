@@ -17,11 +17,11 @@ export default function Home() {
 
   const fetchPosts = useCallback(async () => {
     try {
-      console.log("Fetching posts...");
+      //("Fetching posts...");
       const response = await fetch(`/api/posts?userId=${user?.id}`);
       const data = await response.json();
       if (data.success) {
-        console.log("Fetched posts:", data.data);
+        //console.log("Fetched posts:", data.data);
         setPosts(data.data);
       }
     } catch (error) {

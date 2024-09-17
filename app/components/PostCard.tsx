@@ -28,11 +28,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
     try {
       const response = await fetch(`/api/likes?postId=${post._id}&userId=${user.id}`);
       const data = await response.json();
-      console.log(`Fetched like info for post ${post._id}:`, data);
+      // console.log(`Fetched like info for post ${post._id}:`, data);
       if (data.success) {
         setLiked(data.data.userLiked);
         setLikeCount(data.data.count);
-        console.log(`Updated like state for post ${post._id}:`, { liked: data.data.userLiked, likeCount: data.data.count });
+        // console.log(`Updated like state for post ${post._id}:`, { liked: data.data.userLiked, likeCount: data.data.count });
       }
     } catch (error) {
       console.error('Failed to fetch like info:', error);
@@ -40,10 +40,9 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
   }, [post._id, user?.id]);
 
   useEffect(() => {
-    console.log(`PostCard mounted for post ${post._id}. Initial state:`, { liked, likeCount });
+    // console.log(`PostCard mounted for post ${post._id}. Initial state:`, { liked, likeCount });
     fetchLikeInfo();
-  }, [post._id, user?.id, fetchLikeInfo]);
-
+  }, [fetchLikeInfo]);
 
   const handleLike = async () => {
     try {
@@ -55,11 +54,11 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
         body: JSON.stringify({ userId: user?.id, postId: post._id }),
       });
       const data = await response.json();
-      console.log(`Like action response for post ${post._id}:`, data);
+      // console.log(`Like action response for post ${post._id}:`, data);
       if (data.success) {
         setLiked(data.liked);
         setLikeCount(prev => data.liked ? prev + 1 : prev - 1);
-        console.log(`Updated like state after action for post ${post._id}:`, { liked: data.liked, likeCount: data.liked ? likeCount + 1 : likeCount - 1 });
+        // console.log(`Updated like state after action for post ${post._id}:`, { liked: data.liked, likeCount: data.liked ? likeCount + 1 : likeCount - 1 });
       } else {
         console.error('Failed to update like:', data.error);
       }

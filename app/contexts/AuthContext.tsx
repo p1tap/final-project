@@ -29,19 +29,19 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     const storedUser = localStorage.getItem('user');
     if (storedUser) {
       const parsedUser = JSON.parse(storedUser);
-      console.log("Loaded user data from localStorage:", parsedUser);
+      //console.log("Loaded user data from localStorage:", parsedUser);
       if (!parsedUser.profilePicture) {
         console.warn("Loaded user data does not contain profilePicture");
       }
       setUser(parsedUser);
     } else {
-      console.log("No user data found in localStorage");
+      //console.log("No user data found in localStorage");
     }
     setIsLoading(false);
   }, []);
 
   const login = (userData: User) => {
-    console.log("Logging in user:", userData);
+    //console.log("Logging in user:", userData);
     if (!userData.profilePicture) {
       console.warn("User data does not contain profilePicture");
     }
@@ -54,7 +54,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     };
     setUser(userToStore);
     localStorage.setItem('user', JSON.stringify(userToStore));
-    console.log("User data stored in localStorage:", JSON.parse(localStorage.getItem('user') || '{}'));
+    //console.log("User data stored in localStorage:", JSON.parse(localStorage.getItem('user') || '{}'));
   };
 
   const logout = () => {
@@ -63,11 +63,11 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   };
   
   const updateUser = (updates: Partial<User>) => {
-    console.log("Updating user with:", updates);
+    //console.log("Updating user with:", updates);
     setUser(currentUser => {
       if (currentUser) {
         const updatedUser = { ...currentUser, ...updates };
-        console.log("Updated user data:", updatedUser);
+        //console.log("Updated user data:", updatedUser);
         localStorage.setItem('user', JSON.stringify(updatedUser));
         return updatedUser;
       }

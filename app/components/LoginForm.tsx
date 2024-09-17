@@ -25,12 +25,12 @@ const LoginForm = () => {
       });
 
       const data = await response.json();
-      console.log("Login API response:", data);
+      //console.log("Login API response:", data);
 
       if (response.ok) {
         toast.success('Login successful!');
-        console.log('Login successful:', data.user);
-        console.log("Full login API response:", data);
+        //console.log('Login successful:', data.user);
+        //console.log("Full login API response:", data);
         login(data.user);
         router.push('/');
       } else {

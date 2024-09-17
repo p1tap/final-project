@@ -34,7 +34,7 @@ export async function PUT(
       { new: true, runValidators: true }
     ).select('-password');
 
-    console.log("Updated user data:", updatedUser);
+    //console.log("Updated user data:", updatedUser);
 
 
     if (!updatedUser) {
