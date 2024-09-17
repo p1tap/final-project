@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
 import { Box, Typography, CircularProgress, List, ListItem, ListItemAvatar, ListItemText, Avatar } from '@mui/material';
 import Header from '@/app/components/Header';
@@ -8,6 +8,14 @@ import Link from 'next/link';
 import { Post, User } from '@/app/types';
 
 export default function SearchPage() {
+  return (
+    <Suspense fallback={<CircularProgress />}>
+      <SearchPageContent />
+    </Suspense>
+  );
+}
+
+function SearchPageContent() {
   const searchParams = useSearchParams();
   const query = searchParams.get('q');
   const [loading, setLoading] = useState(true);
