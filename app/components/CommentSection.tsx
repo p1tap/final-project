@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, TextField, Button, List, ListItem, ListItemText, IconButton, Avatar } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
@@ -33,16 +33,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [editContent, setEditContent] = useState('');
   const { user } = useAuth();
 
-  useEffect(() => {
-    fetchComments();
-  }, [postId]);
-
-  useEffect(() => {
-    // Fetch initial like status and count for each comment
-    comments.forEach(comment => fetchCommentLikes(comment._id));
-  }, [comments]);
-
-  const fetchComments = async () => {
+  // Wrap fetchComments in useCallback
+  const fetchComments = useCallback(async () => {
     try {
       const response = await fetch(`/api/comments?postId=${postId}`);
       const data = await response.json();
@@ -52,7 +44,32 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     } catch (error) {
       console.error('Failed to fetch comments:', error);
     }
-  };
+  }, [postId]); // Add postId as a dependency
+
+  // Wrap fetchCommentLikes in useCallback
+  const fetchCommentLikes = useCallback(async (commentId: string) => {
+    try {
+      const response = await fetch(`/api/comments/${commentId}/likes?userId=${user?.id}`);
+      const data = await response.json();
+      if (data.success) {
+        setCommentLikes(prev => ({
+          ...prev,
+          [commentId]: { count: data.data.count, userLiked: data.data.userLiked }
+        }));
+      }
+    } catch (error) {
+      console.error('Failed to fetch comment likes:', error);
+    }
+  }, [user?.id]); // Add user?.id as a dependency
+
+  useEffect(() => {
+    fetchComments();
+  }, [postId, fetchComments]); // Add fetchComments to the dependency array
+
+  useEffect(() => {
+    // Fetch initial like status and count for each comment
+    comments.forEach(comment => fetchCommentLikes(comment._id));
+  }, [comments, fetchCommentLikes]); // Add fetchCommentLikes to the dependency array
 
   const handleSubmitComment = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -136,21 +153,6 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     } catch (error) {
       console.error('Failed to update comment:', error);
       toast.error('An error occurred while updating the comment');
-    }
-  };
-
-  const fetchCommentLikes = async (commentId: string) => {
-    try {
-      const response = await fetch(`/api/comments/${commentId}/likes?userId=${user?.id}`);
-      const data = await response.json();
-      if (data.success) {
-        setCommentLikes(prev => ({
-          ...prev,
-          [commentId]: { count: data.data.count, userLiked: data.data.userLiked }
-        }));
-      }
-    } catch (error) {
-      console.error('Failed to fetch comment likes:', error);
     }
   };
 
