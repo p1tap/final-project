@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/app/components/Header';
 import CommentSection from '@/app/components/CommentSection';
@@ -29,7 +29,7 @@ export default function ProfilePage() {
   const params = useParams();
   const { user: currentUser } = useAuth();
 
-  const fetchProfileData = async () => {
+  const fetchProfileData = useCallback(async () => {
     try {
       const response = await fetch(`/api/profile/${params.userId}`);
       const data = await response.json();
@@ -45,11 +45,11 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  };
+  }, [params.userId]);
 
   useEffect(() => {
     fetchProfileData();
-  }, [params.userId]);
+  }, [fetchProfileData]);
 
   const handleUpdateSuccess = () => {
     setIsEditing(false);
