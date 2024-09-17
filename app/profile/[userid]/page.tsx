@@ -11,8 +11,18 @@ import { Post as PostType } from '@/app/types';
 import { useAuth } from '@/app/contexts/AuthContext';
 import EditIcon from '@mui/icons-material/Edit';
 
+interface ProfileUser {
+  _id: string;
+  username: string;
+  name: string;
+  bio: string;
+  __v: number;
+  profilePicture?: string;
+}
+
+
 export default function ProfilePage() {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<ProfileUser | null>(null);
   const [posts, setPosts] = useState<PostType[]>([]);
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
@@ -25,6 +35,7 @@ export default function ProfilePage() {
       const data = await response.json();
       if (data.success) {
         setUser(data.data.user);
+        //console.log('User object:', data.data.user);
         setPosts(data.data.posts);
       } else {
         throw new Error(data.error);
@@ -64,7 +75,7 @@ export default function ProfilePage() {
       <Container maxWidth="md">
         <Paper elevation={3} sx={{ mt: 4, mb: 4, p: 3, textAlign: 'center' }}>
           {isEditing ? (
-            <EditProfileForm user={user} onUpdateSuccess={handleUpdateSuccess} />
+            <EditProfileForm user={user as ProfileUser} onUpdateSuccess={handleUpdateSuccess} />
           ) : (
             <>
               <Box
@@ -99,7 +110,7 @@ export default function ProfilePage() {
                         alignItems: 'center',
                         opacity: 0,
                         transition: 'opacity 0.3s',
-                        borderRadius: '50%', // Make the hover effect circular
+                        borderRadius: '50%', 
                         '&:hover': {
                           opacity: 1,
                         },
