@@ -14,7 +14,7 @@ if (!MONGODB_URI) {
   );
 }
 
-let cached: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } = { conn: null, promise: null };
+const cached: { conn: typeof mongoose | null; promise: Promise<typeof mongoose> | null } = { conn: null, promise: null };
 
 async function dbConnect() {
   if (cached.conn) {

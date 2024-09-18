@@ -106,6 +106,22 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ user, onUpdateSuccess
         >
           <EditIcon sx={{ color: 'white' }} />
         </Box>
+        <Box
+        sx={{
+          position: 'absolute',
+          bottom: 0,
+          right: 0,
+          backgroundColor: 'primary.main',
+          borderRadius: '50%',
+          width: 24,
+          height: 24,
+          display: 'flex',
+          justifyContent: 'center',
+          alignItems: 'center',
+        }}
+      >
+        <EditIcon sx={{ color: 'white', fontSize: 16 }} />
+      </Box>
       </Box>
       <input
         type="file"

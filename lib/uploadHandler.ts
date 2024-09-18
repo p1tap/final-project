@@ -23,6 +23,12 @@ interface UploadResult {
   file: UploadFile;
 }
 
+// Define the Cloudinary upload result type
+interface CloudinaryUploadResult {
+  secure_url: string;
+  // Add other properties you might need from the Cloudinary result
+}
+
 export const uploadFile = async (req: Request): Promise<UploadResult> => {
   const formData = await req.formData();
   const fields: UploadFields = {};
@@ -34,12 +40,12 @@ export const uploadFile = async (req: Request): Promise<UploadResult> => {
     } else if (key === 'profilePicture' && value instanceof Blob) {
       const buffer = Buffer.from(await value.arrayBuffer());
       try {
-        const result = await new Promise<any>((resolve, reject) => {
+        const result = await new Promise<CloudinaryUploadResult>((resolve, reject) => {
           cloudinary.uploader.upload_stream(
             { folder: 'profile_pictures' },
             (error, result) => {
               if (error) reject(error);
-              else resolve(result);
+              else resolve(result as CloudinaryUploadResult);
             }
           ).end(buffer);
         });
