@@ -30,6 +30,7 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
   const { user: currentUser } = useAuth();
+  console.log("Params:", params);
 
   const fetchProfileData = useCallback(async () => {
     try {
