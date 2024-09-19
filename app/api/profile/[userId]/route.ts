@@ -29,6 +29,10 @@ export async function GET(
   await dbConnect();
   const { userId } = params;
 
+  if (!userId) {
+    return NextResponse.json({ success: false, error: "User ID is required" }, { status: 400 });
+  }
+
   try {
     const user = await User.findById(userId).select('-password').lean() as Omit<IUser, 'password'>;
     if (!user) {

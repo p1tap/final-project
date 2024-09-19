@@ -29,20 +29,21 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
-  console.log("Params in component:", params);
+  const userId = params?.userId as string;
   const { user: currentUser } = useAuth();
-  console.log("Params:", params);
 
   const fetchProfileData = useCallback(async () => {
+    if (!userId) {
+      console.error('userId is undefined');
+      setLoading(false);
+      return;
+    }
+
     try {
-      const response = await fetch(`/api/profile/${params.userId}`);
+      const response = await fetch(`/api/profile/${userId}`);
       const data = await response.json();
-      console.log("Fetching profile data for userId:", params.userId);
-      console.log("Response data:", data);
       if (data.success) {
         setUser(data.data.user);
-        //console.log('User object:', data.data.user);
-        
         setPosts(data.data.posts);
       } else {
         throw new Error(data.error);
@@ -52,7 +53,7 @@ export default function ProfilePage() {
     } finally {
       setLoading(false);
     }
-  }, [params.userId]);
+  }, [userId]);
 
   useEffect(() => {
   if (params.userId) {
@@ -63,9 +64,6 @@ export default function ProfilePage() {
   }
 }, [fetchProfileData, params.userId]);
 
-  useEffect(() => {
-    fetchProfileData();
-  }, [fetchProfileData]);
 
   const handleUpdateSuccess = () => {
     setIsEditing(false);
