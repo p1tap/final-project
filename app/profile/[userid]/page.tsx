@@ -1,5 +1,5 @@
 "use client";
-
+//app\profile\[userId]\page.tsx
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import Header from '@/app/components/Header';
@@ -36,9 +36,12 @@ export default function ProfilePage() {
     try {
       const response = await fetch(`/api/profile/${params.userId}`);
       const data = await response.json();
+      console.log("Fetching profile data for userId:", params.userId);
+      console.log("Response data:", data);
       if (data.success) {
         setUser(data.data.user);
         //console.log('User object:', data.data.user);
+        
         setPosts(data.data.posts);
       } else {
         throw new Error(data.error);
@@ -49,6 +52,15 @@ export default function ProfilePage() {
       setLoading(false);
     }
   }, [params.userId]);
+
+  useEffect(() => {
+  if (params.userId) {
+    fetchProfileData();
+  } else {
+    console.error('userId is undefined');
+    setLoading(false);
+  }
+}, [fetchProfileData, params.userId]);
 
   useEffect(() => {
     fetchProfileData();
