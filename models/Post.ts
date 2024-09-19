@@ -17,7 +17,7 @@ PostSchema.pre('findOneAndUpdate', function(next) {
 
 export interface IPost {
   _id: mongoose.Types.ObjectId;
-  user: mongoose.Types.ObjectId | IUser;
+  user: IUser
   content: string;
   image?: string;
   createdAt: Date;

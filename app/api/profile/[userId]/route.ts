@@ -14,6 +14,7 @@ interface PostWithLikes {
     _id: string;
     username: string;
     name: string;
+    profilePicture?: string;
   };
   createdAt: string;
   updatedAt?: string;
@@ -35,7 +36,7 @@ export async function GET(
 
     const posts = await Post.find({ user: userId })
       .sort({ createdAt: -1 })
-      .populate('user', 'username name')
+      .populate('user', 'username name profilePicture')
       .lean() as (IPost & { user: { _id: Types.ObjectId; username: string; name: string } })[];
 
     const postsWithLikes: PostWithLikes[] = await Promise.all(posts.map(async (post) => {
@@ -46,7 +47,8 @@ export async function GET(
         user: {
           _id: post.user._id.toString(),
           username: post.user.username,
-          name: post.user.name
+          name: post.user.name,
+          profilePicture: post.user.profilePicture
         },
         createdAt: post.createdAt.toISOString(),
         updatedAt: post.updatedAt ? post.updatedAt.toISOString() : undefined,

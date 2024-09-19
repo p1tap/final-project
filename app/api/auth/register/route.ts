@@ -22,7 +22,7 @@ export async function POST(request: Request) {
 
     // Create the user
     const user = await User.create({ username, password, name });
-    console.log('User created:', { username, name, userId: user._id });
+    // console.log('User created:', { username, name, userId: user._id });
 
 
     return NextResponse.json({ success: true, message: 'User registered successfully' }, { status: 201 });

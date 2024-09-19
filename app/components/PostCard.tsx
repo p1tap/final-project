@@ -12,6 +12,8 @@ import { Post } from '../types';
 import { toast } from 'react-toastify';
 import CommentSection from './CommentSection';
 import Image from 'next/image';
+import Link from 'next/link';
+
 
 
 interface PostCardProps {
@@ -20,6 +22,7 @@ interface PostCardProps {
 }
 
 const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
+  // console.log('PostCard user data:', post.user);
   const [liked, setLiked] = useState(post.userLiked);
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isEditing, setIsEditing] = useState(false);
@@ -105,12 +108,14 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
     <Card sx={{ marginBottom: 2 }}>
       <CardContent>
         <Box display="flex" alignItems="center" mb={2}>
-          <Avatar 
-            src={post.user.profilePicture} 
-            sx={{ mr: 2 }}
-          >
-            {!post.user.profilePicture && post.user.name[0]}
-          </Avatar>
+          <Link href={`/profile/${post.user._id}`} passHref>
+              <Avatar 
+                src={post.user.profilePicture} 
+                sx={{ mr: 2, cursor: 'pointer' }}
+              >
+                {!post.user.profilePicture && post.user.name[0]}
+              </Avatar>
+          </Link>
           <Box>
             <Typography variant="h6">{post.user.name}</Typography>
             <Typography variant="body2" color="text.secondary">

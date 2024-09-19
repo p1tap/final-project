@@ -10,6 +10,8 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import { Post as PostType } from '@/app/types';
 import { useAuth } from '@/app/contexts/AuthContext';
 import EditIcon from '@mui/icons-material/Edit';
+import PostCard from '@/app/components/PostCard';
+
 
 interface ProfileUser {
   _id: string;
@@ -151,23 +153,7 @@ export default function ProfilePage() {
         <Typography variant="h5" sx={{ mb: 2 }}>Posts</Typography>
         {posts.length > 0 ? (
           posts.map((post) => (
-            <Card key={post._id} sx={{ mb: 2 }}>
-              <CardContent>
-                <Typography variant="body1">{post.content}</Typography>
-                <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
-                  <IconButton size="small" disabled>
-                    <FavoriteIcon color="action" />
-                  </IconButton>
-                  <Typography variant="body2" color="text.secondary">
-                    {post.likeCount} likes
-                  </Typography>
-                </Box>
-                <Typography variant="caption" color="text.secondary">
-                  Posted on: {new Date(post.createdAt).toLocaleString()}
-                </Typography>
-                <CommentSection postId={post._id} />
-              </CardContent>
-            </Card>
+            <PostCard key={post._id} post={post} onPostUpdated={fetchProfileData} />
           ))
         ) : (
           <Typography variant="body1">No posts yet.</Typography>

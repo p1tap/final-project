@@ -24,10 +24,10 @@ UserSchema.pre('save', async function(next) {
 
 // Method to check password
 UserSchema.methods.comparePassword = async function(candidatePassword: string) {
-  console.log('Comparing passwords:', { 
-    candidatePassword, 
-    hashedPassword: this.password.substring(0, 10) + '...' 
-  });
+  // console.log('Comparing passwords:', { 
+  //   candidatePassword, 
+  //   hashedPassword: this.password.substring(0, 10) + '...' 
+  // });
   return bcrypt.compare(candidatePassword, this.password);
 };
 

@@ -7,6 +7,7 @@ import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
+import Link from 'next/link';
 
 interface Comment {
   _id: string;
@@ -178,12 +179,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       <List>
         {comments.map((comment) => (
           <ListItem key={comment._id} alignItems="flex-start">
-            <Avatar 
-              src={comment.user.profilePicture} 
-              sx={{ mr: 2 }}
-            >
-              {!comment.user.profilePicture && comment.user.name[0]}
-            </Avatar>
+            <Link href={`/profile/${comment.user._id}`} passHref>
+              <Avatar 
+                src={comment.user.profilePicture} 
+                sx={{ mr: 2, cursor: 'pointer' }}
+              >
+                {!comment.user.profilePicture && comment.user.name[0]}
+              </Avatar>
+            </Link>
             <ListItemText
               primary={
                 <React.Fragment>
