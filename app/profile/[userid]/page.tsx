@@ -5,21 +5,24 @@ import { Box, Typography, Container } from '@mui/material';
 
 export default function ProfilePage() {
   const params = useParams();
-  const userId = params?.userId as string;
+  console.log('Raw params:', params);
+  
+  const userId = params?.userId || params?.userid || null;
+  console.log('Extracted userId:', userId);
+
   const [echoedUserId, setEchoedUserId] = useState<string | null>(null);
 
   useEffect(() => {
-    console.log('Params:', params);
-    console.log('UserId:', userId);
-
-    fetch(`/api/echo/${userId}`)
-      .then(response => response.json())
-      .then(data => {
-        console.log('Echoed data:', data);
-        setEchoedUserId(data.userId);
-      })
-      .catch(error => console.error('Error fetching echoed userId:', error));
-  }, [params, userId]);
+    if (userId) {
+      fetch(`/api/echo/${userId}`)
+        .then(response => response.json())
+        .then(data => {
+          console.log('Echoed data:', data);
+          setEchoedUserId(data.userId);
+        })
+        .catch(error => console.error('Error fetching echoed userId:', error));
+    }
+  }, [userId]);
 
   return (
     <Container maxWidth="md">
@@ -32,7 +35,7 @@ export default function ProfilePage() {
           User ID from echo API: {echoedUserId || 'Not available'}
         </Typography>
         <Typography variant="body1" sx={{ mt: 2 }}>
-          Params: {JSON.stringify(params)}
+          Raw Params: {JSON.stringify(params)}
         </Typography>
       </Box>
     </Container>
