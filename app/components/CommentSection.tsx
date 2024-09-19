@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback } from 'react';
 import { Box, Typography, TextField, Button, List, ListItem, ListItemText, IconButton, Avatar } from '@mui/material';
+import CircularProgress from '@mui/material/CircularProgress';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -33,6 +34,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const { user } = useAuth();
+  const [isPosting, setIsPosting] = useState(false);
 
   // Wrap fetchComments in useCallback
   const fetchComments = useCallback(async () => {
@@ -78,6 +80,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       toast.error('You must be logged in to comment.');
       return;
     }
+    setIsPosting(true);
     try {
       const response = await fetch('/api/comments', {
         method: 'POST',
@@ -101,6 +104,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     } catch (error) {
       console.error('Failed to submit comment:', error);
       toast.error('An error occurred while posting the comment');
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -265,8 +270,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             onChange={(e) => setNewComment(e.target.value)}
             margin="normal"
           />
-          <Button type="submit" variant="contained" color="primary">
-            Post Comment
+          <Button 
+            type="submit" 
+            variant="contained" 
+            color="primary" 
+            disabled={isPosting}
+            startIcon={isPosting ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {isPosting ? 'Posting...' : 'Post Comment'}
           </Button>
         </Box>
       ) : (

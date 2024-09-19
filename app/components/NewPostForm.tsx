@@ -4,15 +4,19 @@ import { Box, TextField, Button, IconButton } from "@mui/material";
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from "react-toastify";
 import ImageIcon from '@mui/icons-material/Image';
+import CircularProgress from '@mui/material/CircularProgress';
+
 
 export default function NewPostForm() {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const { user } = useAuth();
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isPosting, setIsPosting] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsPosting(true);
     try {
       const formData = new FormData();
       formData.append('content', content);
@@ -40,6 +44,8 @@ export default function NewPostForm() {
     } catch (error) {
       console.error("Error creating post:", error);
       toast.error('Error creating post');
+    } finally {
+      setIsPosting(false);
     }
   };
 
@@ -74,8 +80,10 @@ export default function NewPostForm() {
         <Button
           type="submit"
           variant="contained"
+          disabled={isPosting}
+          startIcon={isPosting ? <CircularProgress size={20} color="inherit" /> : null}
         >
-          Post
+          {isPosting ? 'Posting...' : 'Post'}
         </Button>
       </Box>
       {image && (

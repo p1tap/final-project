@@ -7,6 +7,7 @@ import { useAuth } from '@/app/contexts/AuthContext';
 import PostCard from '@/app/components/PostCard';
 import EditProfileForm from '@/app/components/EditProfileForm';
 import { Post, User } from '@/app/types';
+import Header from '@/app/components/Header';
 
 interface EditProfileFormProps {
   user: {
@@ -101,6 +102,8 @@ export default function ProfilePage() {
   }
 
   return (
+    <>
+    <Header />
     <Container maxWidth="md">
       <Box sx={{ mt: 4 }}>
         <Box sx={{ display: 'flex', alignItems: 'center', mb: 4 }}>
@@ -167,5 +170,6 @@ export default function ProfilePage() {
         )}
       </Box>
     </Container>
+    </>
   );
 }

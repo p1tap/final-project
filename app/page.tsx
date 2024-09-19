@@ -74,7 +74,7 @@ export default function Home() {
       <Header />
       <Box sx={{ maxWidth: 600, margin: "0 auto", padding: 2 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Social Media Feed
+          Home
         </Typography>
         <NewPostForm />
         {posts.map((post) => (

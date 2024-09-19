@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef } from 'react';
-import { Box, TextField, Button, Avatar } from '@mui/material';
+import { Box, TextField, Button, Avatar, CircularProgress } from '@mui/material';
 import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
 import EditIcon from '@mui/icons-material/Edit';
@@ -24,6 +24,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ user, onUpdateSuccess
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [previewUrl, setPreviewUrl] = useState<string | null>(user.profilePicture || null);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -35,6 +36,7 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ user, onUpdateSuccess
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     try {
       const formData = new FormData();
       formData.append('name', name);
@@ -63,6 +65,9 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ user, onUpdateSuccess
     } catch (error) {
       console.error('Error updating profile:', error);
       toast.error('An error occurred while updating the profile');
+    }
+    finally {
+      setIsLoading(false);
     }
   };
 
@@ -146,8 +151,14 @@ const EditProfileForm: React.FC<EditProfileFormProps> = ({ user, onUpdateSuccess
         multiline
         rows={4}
       />
-      <Button type="submit" variant="contained" color="primary" sx={{ mt: 2 }}>
-        Update Profile
+      <Button 
+        type="submit" 
+        variant="contained" 
+        color="primary" 
+        sx={{ mt: 2 }}
+        disabled={isLoading}
+      >
+        {isLoading ? <CircularProgress size={24} /> : 'Update Profile'}
       </Button>
     </Box>
   );
