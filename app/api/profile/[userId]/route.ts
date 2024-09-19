@@ -26,18 +26,23 @@ export async function GET(
   request: Request,
   { params }: { params: { userId: string } }
 ) {
+  console.log('Profile API called with params:', params);
   await dbConnect();
   const { userId } = params;
 
   if (!userId) {
+    console.error('User ID is undefined');
     return NextResponse.json({ success: false, error: "User ID is required" }, { status: 400 });
   }
 
   try {
+    console.log('Attempting to find user with ID:', userId);
     const user = await User.findById(userId).select('-password').lean() as Omit<IUser, 'password'>;
     if (!user) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });
     }
+
+    console.log('User found:', user);
 
     const posts = await Post.find({ user: userId })
       .sort({ createdAt: -1 })
