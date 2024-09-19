@@ -5,6 +5,7 @@ import { IUser } from "./User";
 const PostSchema = new mongoose.Schema({
   user: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
   content: { type: String, required: true },
+  image: { type: String },
   createdAt: { type: Date, default: Date.now },
   updatedAt: { type: Date, default: Date.now },
 });
@@ -18,6 +19,7 @@ export interface IPost {
   _id: mongoose.Types.ObjectId;
   user: mongoose.Types.ObjectId | IUser;
   content: string;
+  image?: string;
   createdAt: Date;
   updatedAt: Date;
 }

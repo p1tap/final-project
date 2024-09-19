@@ -11,6 +11,8 @@ import EditPostForm from './EditPostForm';
 import { Post } from '../types';
 import { toast } from 'react-toastify';
 import CommentSection from './CommentSection';
+import Image from 'next/image';
+
 
 interface PostCardProps {
   post: Post;
@@ -123,6 +125,17 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
             <Typography variant="body1" sx={{ mb: 2 }}>
               {post.content}
             </Typography>
+            {post.image && (
+              <Box sx={{ mb: 2 }}>
+                <Image
+                  src={post.image}
+                  alt="Post image"
+                  width={500}
+                  height={300}
+                  layout="responsive"
+                />
+              </Box>
+            )}
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Typography variant="caption" color="text.secondary">
                 {new Date(post.createdAt).toLocaleString()}

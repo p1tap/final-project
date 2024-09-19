@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Post from "@/models/Post";
 import Like from "@/models/Like";
+import { uploadFile } from "@/lib/uploadHandler";
 
 export async function GET(request: Request) {
   await dbConnect();
@@ -44,15 +45,18 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { content, userId } = await request.json();
+    const { fields, file } = await uploadFile(request);
 
-    if (!content || !userId) {
-      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
+    console.log("Received fields:", fields); // Add this line for debugging
+
+    if (!fields.content || !fields.content[0] || !fields.userId || !fields.userId[0]) {
+      return NextResponse.json({ success: false, error: "Missing required fields", receivedFields: fields }, { status: 400 });
     }
 
     const newPost = await Post.create({
-      content,
-      user: userId
+      content: fields.content[0],
+      user: fields.userId[0],
+      image: file.postImage?.[0]?.filepath
     });
 
     const populatedPost = await Post.findById(newPost._id).populate("user", "username name profilePicture");
