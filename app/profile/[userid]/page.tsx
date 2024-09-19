@@ -5,7 +5,7 @@ import { Box, Typography, Container } from '@mui/material';
 
 export default function ProfilePage() {
   const params = useParams();
-  const userId = params?.userid as string;
+  const userId = params?.userId as string;
   const [echoedUserId, setEchoedUserId] = useState<string | null>(null);
 
   useEffect(() => {
