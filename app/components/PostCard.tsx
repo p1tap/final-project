@@ -157,10 +157,8 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
         {user && user.id === post.user._id && !isEditing && (
           <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
             <Button startIcon={<EditIcon />} onClick={handleEdit} sx={{ mr: 1 }}>
-              Edit
             </Button>
             <Button startIcon={<DeleteIcon />} onClick={handleDelete} color="error">
-              Delete
             </Button>
           </Box>
         )}
