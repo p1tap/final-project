@@ -87,7 +87,7 @@ const Header = () => {
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               onKeyPress={handleSearch}
-              sx={{ width: '50%', backgroundColor: 'white', borderRadius: 1 }}
+              sx={{ width: '50%', backgroundColor: 'white', borderRadius: 8 }}
               InputProps={{
                 startAdornment: (
                   <InputAdornment position="start">
