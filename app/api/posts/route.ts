@@ -3,29 +3,41 @@ import dbConnect from "@/lib/dbConnect";
 import Post from "@/models/Post";
 import Like from "@/models/Like";
 import { uploadFile } from "@/lib/uploadHandler";
+import User from "@/models/User";
 
 export async function GET(request: Request) {
   await dbConnect();
   const { searchParams } = new URL(request.url);
   const userId = searchParams.get("userId");
 
-  //console.log(`GET /api/posts - Query params:`, { userId });
+  console.log(`GET /api/posts - Query params:`, { userId });
 
   try {
     let query = {};
-    if (userId) {
-      query = { user: userId };
-    }
+    // Remove this condition to fetch all posts regardless of user
+    // if (userId) {
+    //   query = { user: userId };
+    // }
+
+    console.log("Query for posts:", query);
 
     const posts = await Post.find(query)
       .populate("user", "username name profilePicture")
       .sort({ createdAt: -1 })
       .limit(50);
+
+    console.log(`Found ${posts.length} posts before adding like information`);
     
     const postsWithLikes = await Promise.all(posts.map(async (post) => {
       const likeCount = await Like.countDocuments({ post: post._id });
       const userLiked = userId ? await Like.exists({ post: post._id, user: userId }) !== null : false;
-      //console.log(`Post ${post._id} like info:`, { likeCount, userLiked });
+      console.log(`Post ${post._id} info:`, { 
+        userId: post.user._id, 
+        username: post.user.username, 
+        content: post.content.substring(0, 20) + "...", 
+        likeCount, 
+        userLiked 
+      });
       return {
         ...post.toObject(),
         likeCount,
@@ -33,11 +45,28 @@ export async function GET(request: Request) {
       };
     }));
 
-    //console.log(`GET /api/posts - Returning ${postsWithLikes.length} posts`);
+    console.log(`GET /api/posts - Returning ${postsWithLikes.length} posts`);
     return NextResponse.json({ success: true, data: postsWithLikes });
   } catch (error) {
     console.error("Failed to fetch posts:", error);
     return NextResponse.json({ success: false, error: "An unknown error occurred" }, { status: 500 });
+  }
+}
+
+
+export async function HEAD(request: Request) {
+  await dbConnect();
+  try {
+    const users = await User.find({}).select('_id username');
+    console.log("All users:");
+    for (const user of users) {
+      const postCount = await Post.countDocuments({ user: user._id });
+      console.log(`User ${user.username} (${user._id}): ${postCount} posts`);
+    }
+    return new Response(null, { status: 200 });
+  } catch (error) {
+    console.error("Failed to fetch user and post information:", error);
+    return new Response(null, { status: 500 });
   }
 }
 
