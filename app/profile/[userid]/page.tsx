@@ -29,6 +29,7 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [isEditing, setIsEditing] = useState(false);
   const params = useParams();
+  console.log("Params in component:", params);
   const { user: currentUser } = useAuth();
   console.log("Params:", params);
 
