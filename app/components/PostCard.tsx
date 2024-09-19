@@ -13,7 +13,9 @@ import { toast } from 'react-toastify';
 import CommentSection from './CommentSection';
 import Image from 'next/image';
 import Link from 'next/link';
-
+import MoreVertIcon from '@mui/icons-material/MoreVert';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
 
 
 interface PostCardProps {
@@ -27,6 +29,27 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
   const [likeCount, setLikeCount] = useState(post.likeCount);
   const [isEditing, setIsEditing] = useState(false);
   const { user } = useAuth();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+
+
+  const handleMoreClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
+
+  const handleEditClick = () => {
+    handleClose();
+    setIsEditing(true);
+  };
+
+  const handleDeleteClick = () => {
+    handleClose();
+    handleDelete();
+  };
+
 
   const fetchLikeInfo = useCallback(async () => {
     if (!user?.id) return;
@@ -107,21 +130,38 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
   return (
     <Card sx={{ marginBottom: 2 }}>
       <CardContent>
-        <Box display="flex" alignItems="center" mb={2}>
-          <Link href={`/profile/${post.user._id}`} passHref>
+        <Box display="flex" alignItems="center" justifyContent="space-between" mb={2}>
+          <Box display="flex" alignItems="center">
+            <Link href={`/profile/${post.user._id}`} passHref>
               <Avatar 
                 src={post.user.profilePicture} 
                 sx={{ mr: 2, cursor: 'pointer' }}
               >
                 {!post.user.profilePicture && post.user.name[0]}
               </Avatar>
-          </Link>
-          <Box>
-            <Typography variant="h6">{post.user.name}</Typography>
-            <Typography variant="body2" color="text.secondary">
-              @{post.user.username}
-            </Typography>
+            </Link>
+            <Box>
+              <Typography variant="h6">{post.user.name}</Typography>
+              <Typography variant="body2" color="text.secondary">
+                @{post.user.username}
+              </Typography>
+            </Box>
           </Box>
+          {user && user.id === post.user._id && !isEditing && (
+            <>
+              <IconButton onClick={handleMoreClick}>
+                <MoreVertIcon />
+              </IconButton>
+              <Menu
+                anchorEl={anchorEl}
+                open={Boolean(anchorEl)}
+                onClose={handleClose}
+              >
+                <MenuItem onClick={handleEditClick}>Edit</MenuItem>
+                <MenuItem onClick={handleDeleteClick}>Delete</MenuItem>
+              </Menu>
+            </>
+          )}
         </Box>
         {isEditing ? (
           <EditPostForm post={post} onEditComplete={handleEditComplete} />
@@ -153,14 +193,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
               </Box>
             </Box>
           </>
-        )}
-        {user && user.id === post.user._id && !isEditing && (
-          <Box sx={{ mt: 2, display: 'flex', justifyContent: 'flex-end' }}>
-            <Button startIcon={<EditIcon />} onClick={handleEdit} sx={{ mr: 1 }}>
-            </Button>
-            <Button startIcon={<DeleteIcon />} onClick={handleDelete} color="error">
-            </Button>
-          </Box>
         )}
         <CommentSection postId={post._id} />
       </CardContent>

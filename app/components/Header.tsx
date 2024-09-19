@@ -52,6 +52,18 @@ const Header = () => {
     }
   };
 
+  const handleNavigation = (path: string) => {
+    if (pathname !== path) {
+      setIsNavigating(true);
+      router.push(path);
+    }
+  };
+
+  const handleHomeClick = (e: React.MouseEvent) => {
+    e.preventDefault();
+    handleNavigation('/');
+  };
+
   if (!user) {
     return null;
   }
@@ -61,13 +73,12 @@ const Header = () => {
       <AppBar position="static">
         <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
           <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="home"
-            component={Link}
-            href="/"
-          >
-            <HomeIcon />
+              edge="start"
+              color="inherit"
+              aria-label="home"
+              onClick={handleHomeClick}
+            >
+              <HomeIcon />
           </IconButton>
 
           <Box sx={{ flexGrow: 1, display: 'flex', justifyContent: 'center' }}>
