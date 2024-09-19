@@ -6,8 +6,11 @@ import { toast } from "react-toastify";
 import ImageIcon from '@mui/icons-material/Image';
 import CircularProgress from '@mui/material/CircularProgress';
 
+interface NewPostFormProps {
+  onPostCreated?: () => void;
+}
 
-export default function NewPostForm() {
+export default function NewPostForm({ onPostCreated }: NewPostFormProps) {
   const [content, setContent] = useState("");
   const [image, setImage] = useState<File | null>(null);
   const { user } = useAuth();
@@ -36,6 +39,11 @@ export default function NewPostForm() {
         setImage(null);
         // Trigger a re-render of the parent component
         window.dispatchEvent(new CustomEvent('newpost'));
+
+        if (onPostCreated) {
+          onPostCreated();
+        }
+        
       } else {
         const errorData = await response.json();
         console.error("Failed to create post:", errorData);

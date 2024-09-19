@@ -8,6 +8,9 @@ import PostCard from '@/app/components/PostCard';
 import EditProfileForm from '@/app/components/EditProfileForm';
 import { Post, User } from '@/app/types';
 import Header from '@/app/components/Header';
+import NewPostForm from "@/app/components/NewPostForm";
+
+
 
 interface EditProfileFormProps {
   user: {
@@ -28,6 +31,8 @@ export default function ProfilePage() {
   const [posts, setPosts] = useState<Post[]>([]);
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [refetchTrigger, setRefetchTrigger] = useState(0);
+
 
   useEffect(() => {
     const fetchProfileData = async () => {
@@ -48,7 +53,11 @@ export default function ProfilePage() {
     };
 
     fetchProfileData();
-  }, [userId]);
+  }, [userId, refetchTrigger]);
+
+  const handlePostCreated = () => {
+    setRefetchTrigger(prev => prev + 1);
+  };
 
   const handleEditProfile = () => {
     setIsEditing(true);
@@ -81,6 +90,7 @@ export default function ProfilePage() {
         })
         .catch(error => console.error('Error refetching posts:', error));
     }
+    setRefetchTrigger(prev => prev + 1);
   };
 
   if (loading) {
@@ -162,6 +172,9 @@ export default function ProfilePage() {
         />
         ) : (
           <Box>
+            {currentUser && currentUser.id === profileUser._id && (
+              <NewPostForm onPostCreated={handlePostCreated} />
+            )}
             <Typography variant="h5" sx={{ mb: 2 }}>Posts</Typography>
             {posts.map(post => (
               <PostCard key={post._id} post={post} onPostUpdated={handlePostUpdated} />
