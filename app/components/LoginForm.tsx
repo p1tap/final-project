@@ -6,7 +6,11 @@ import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
 
-const LoginForm = () => {
+interface LoginFormProps {
+  onLoadingChange: (isLoading: boolean) => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onLoadingChange }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
@@ -15,7 +19,9 @@ const LoginForm = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     setError('');
+    onLoadingChange(true);
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -25,12 +31,9 @@ const LoginForm = () => {
       });
 
       const data = await response.json();
-      //console.log("Login API response:", data);
 
       if (response.ok) {
         toast.success('Login successful!');
-        //console.log('Login successful:', data.user);
-        //console.log("Full login API response:", data);
         login(data.user);
         router.push('/');
       } else {
@@ -39,9 +42,10 @@ const LoginForm = () => {
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
+    } finally {
+      onLoadingChange(false);
     }
   };
-
   return (
     <Container component="main" maxWidth="xs">
       <Box

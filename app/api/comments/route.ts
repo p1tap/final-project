@@ -29,6 +29,8 @@ export async function GET(request: Request) {
   }
 }
 
+// ... existing imports ...
+
 export async function POST(request: Request) {
   await dbConnect();
 
@@ -36,43 +38,37 @@ export async function POST(request: Request) {
     const formData = await request.formData();
     const userId = formData.get('userId') as string;
     const postId = formData.get('postId') as string;
-    const content = formData.get('content') as string;
+    const content = formData.get('content') as string | null;
     const commentImage = formData.get('commentImage') as File | null;
 
-    // console.log('Received form data:', { userId, postId, content, hasImage: !!commentImage });
+
+    if (!content && !commentImage) {
+      return NextResponse.json({ success: false, error: "Comment must have either text content or an image" }, { status: 400 });
+    }
 
     let imageUrl = null;
     if (commentImage) {
-      // console.log('Uploading image:', commentImage.name);
       try {
         imageUrl = await uploadFile(commentImage, 'comment_images');
-        // console.log('Uploaded image URL:', imageUrl);
       } catch (uploadError) {
         console.error('Error uploading image:', uploadError);
+        return NextResponse.json({ success: false, error: "Failed to upload image" }, { status: 500 });
       }
-    } else {
-      // console.log('No image to upload');
     }
 
     const commentData = { 
       user: userId, 
       post: postId, 
-      content,
+      content: content || "",  // Use an empty string if no content is provided
       image: imageUrl
     };
 
-    // console.log('Creating comment with data:', commentData);
-
     const comment = await Comment.create(commentData);
-
-    // console.log('Created comment:', JSON.stringify(comment.toObject(), null, 2));
 
     const populatedComment = await Comment.findById(comment._id)
       .populate("user", "username name profilePicture")
       .lean();
     
-    // console.log('Populated comment:', JSON.stringify(populatedComment, null, 2));
-
     return NextResponse.json({ success: true, data: populatedComment });
   } catch (error) {
     console.error('Error creating comment:', error);

@@ -83,59 +83,50 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     comments.forEach(comment => fetchCommentLikes(comment._id));
   }, [comments, fetchCommentLikes]); // Add fetchCommentLikes to the dependency array
 
-const handleSubmitComment = async (e: React.FormEvent) => {
-  e.preventDefault();
-  if (!user) {
-    toast.error('You must be logged in to comment.');
-    return;
-  }
-  setIsPosting(true);
-  try {
-    const formData = new FormData();
-    formData.append('postId', postId);
-    formData.append('content', newComment);
-    formData.append('userId', user.id);
-    if (commentImage) {
-      formData.append('commentImage', commentImage);
-      // console.log('Appending image to form data:', commentImage);
-    }
 
-    // console.log('Submitting comment:', { postId, content: newComment, userId: user.id, hasImage: !!commentImage });
-
-    const response = await fetch('/api/comments', {
-      method: 'POST',
-      body: formData,
-    });
-    
-    const responseText = await response.text();
-    console.log('Raw response:', responseText);
-    
-    let data;
-    try {
-      data = JSON.parse(responseText);
-    } catch (parseError) {
-      console.error('Failed to parse response:', parseError);
-      toast.error('Server response was not valid JSON');
+  const handleSubmitComment = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!user) {
+      toast.error('You must be logged in to comment.');
       return;
     }
-
-    // console.log('Parsed response data:', data);
-
-    if (data.success) {
-      setNewComment('');
-      setCommentImage(null);
-      fetchComments();
-      toast.success('Comment posted successfully!');
-    } else {
-      toast.error(data.error || 'Failed to post comment');
+    if (!newComment && !commentImage) {
+      toast.error('Please enter a comment or upload an image.');
+      return;
     }
-  } catch (error) {
-    console.error('Failed to submit comment:', error);
-    toast.error('An error occurred while posting the comment');
-  } finally {
-    setIsPosting(false);
-  }
-};
+    setIsPosting(true);
+    try {
+      const formData = new FormData();
+      formData.append('postId', postId);
+      formData.append('content', newComment);
+      formData.append('userId', user.id);
+      if (commentImage) {
+        formData.append('commentImage', commentImage);
+      }
+
+      const response = await fetch('/api/comments', {
+        method: 'POST',
+        body: formData,
+      });
+      
+      const data = await response.json();
+
+      if (data.success) {
+        setNewComment('');
+        setCommentImage(null);
+        fetchComments();
+        toast.success('Comment posted successfully!');
+      } else {
+        toast.error(data.error || 'Failed to post comment');
+      }
+    } catch (error) {
+      console.error('Failed to submit comment:', error);
+      toast.error('An error occurred while posting the comment');
+    } finally {
+      setIsPosting(false);
+    }
+  };
+
 
   const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -325,37 +316,37 @@ const handleSubmitComment = async (e: React.FormEvent) => {
         ))}
       </List>
       {user ? (
-        <Box component="form" onSubmit={handleSubmitComment}>
-          <TextField
-            fullWidth
-            variant="outlined"
-            placeholder="Write a comment..."
-            value={newComment}
-            onChange={(e) => setNewComment(e.target.value)}
-            margin="normal"
+      <Box component="form" onSubmit={handleSubmitComment}>
+        <TextField
+          fullWidth
+          variant="outlined"
+          placeholder="Write a comment..."
+          value={newComment}
+          onChange={(e) => setNewComment(e.target.value)}
+          margin="normal"
+        />
+        <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+          <input
+            type="file"
+            accept="image/*"
+            style={{ display: 'none' }}
+            ref={fileInputRef}
+            onChange={handleImageChange}
           />
-          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
-            <input
-              type="file"
-              accept="image/*"
-              style={{ display: 'none' }}
-              ref={fileInputRef}
-              onChange={handleImageChange}
-            />
-            <IconButton onClick={() => fileInputRef.current?.click()}>
-              <ImageIcon />
-            </IconButton>
-            <Button 
-              type="submit" 
-              variant="contained" 
-              color="primary" 
-              disabled={isPosting}
-              startIcon={isPosting ? <CircularProgress size={20} color="inherit" /> : null}
-            >
-              {isPosting ? 'Posting...' : 'Post Comment'}
-            </Button>
-          </Box>
-          {commentImage && (
+          <IconButton onClick={() => fileInputRef.current?.click()}>
+            <ImageIcon />
+          </IconButton>
+          <Button 
+            type="submit" 
+            variant="contained" 
+            color="primary" 
+            disabled={isPosting || (!newComment && !commentImage)}
+            startIcon={isPosting ? <CircularProgress size={20} color="inherit" /> : null}
+          >
+            {isPosting ? 'Posting...' : 'Post Comment'}
+          </Button>
+        </Box>
+        {commentImage && (
           <Box sx={{ mt: 2 }}>
             <Image
               src={URL.createObjectURL(commentImage)}
@@ -366,7 +357,7 @@ const handleSubmitComment = async (e: React.FormEvent) => {
             />
           </Box>
         )}
-        </Box>
+      </Box>
       ) : (
         <Typography variant="body2" color="text.secondary">
           Please log in to post a comment.
