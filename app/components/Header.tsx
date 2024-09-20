@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { AppBar, Toolbar, Typography, Box, Avatar, TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import Link from 'next/link';
@@ -20,6 +20,7 @@ const Header = () => {
   const pathname = usePathname();
   const [searchQuery, setSearchQuery] = useState('');
   const [isNavigating, setIsNavigating] = useState(false);
+  const [isSearching, setIsSearching] = useState(false);
 
 
   const handleLogout = () => {
@@ -27,16 +28,19 @@ const Header = () => {
     router.push('/login');
   };
 
-  const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+  const handleSearch = useCallback((e: React.KeyboardEvent<HTMLInputElement>) => {
     if (e.key === 'Enter') {
+      setIsSearching(true);
       router.push(`/search?q=${encodeURIComponent(searchQuery)}`);
     }
-  };
+  }, [searchQuery, router]);
 
   useEffect(() => {
-    // Reset navigation state when pathname changes
+    // Reset navigation and search states when pathname changes
     setIsNavigating(false);
+    setIsSearching(false);
   }, [pathname]);
+
 
   const handleProfileClick = (e: React.MouseEvent) => {
     e.preventDefault();
@@ -148,7 +152,7 @@ const Header = () => {
 
       <Backdrop
         sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
-        open={isNavigating}
+        open={isNavigating || isSearching}
       >
         <CircularProgress color="inherit" />
       </Backdrop>

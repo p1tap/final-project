@@ -177,11 +177,14 @@ export default function ProfilePage() {
             <Typography variant="h4">{profileUser.name}</Typography>
             <Typography variant="subtitle1" color="text.secondary">@{profileUser.username}</Typography>
             {currentUser && currentUser.id === profileUser._id && !isEditing && (
-              
-              // Edit Profile 
-              <Button variant="outlined" onClick={handleEditProfile} sx={{ mt: 1 }}>
-                Edit Profile
-              </Button>
+            <Button 
+              variant="outlined" 
+              onClick={handleEditProfile} 
+              sx={{ mt: 1 }}
+              disabled={isLoading}
+            >
+              {isLoading ? 'Loading...' : 'Edit Profile'}
+            </Button>
             )}
           </Box>
         </Box>
@@ -217,6 +220,12 @@ export default function ProfilePage() {
         )}
       </Box>
     </Container>
+    <Backdrop
+      sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+      open={isLoading}
+    >
+      <CircularProgress color="inherit" />
+    </Backdrop>
     </>
   );
 }

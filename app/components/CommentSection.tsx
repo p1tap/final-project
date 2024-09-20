@@ -1,7 +1,7 @@
 "use client";
 import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, Typography, TextField, Button, List, ListItem, ListItemText, IconButton, Avatar } from '@mui/material';
-import CircularProgress from '@mui/material/CircularProgress';
+import { Backdrop, CircularProgress } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import EditIcon from '@mui/icons-material/Edit';
 import FavoriteIcon from '@mui/icons-material/Favorite';
@@ -40,6 +40,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const { user } = useAuth();
   const [isPosting, setIsPosting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const [processingCommentId, setProcessingCommentId] = useState<string | null>(null);
+
 
 
   // Wrap fetchComments in useCallback
@@ -143,6 +145,7 @@ const handleSubmitComment = async (e: React.FormEvent) => {
 
 
   const handleDeleteComment = async (commentId: string) => {
+    setProcessingCommentId(commentId);
     try {
       const response = await fetch(`/api/comments/${commentId}`, {
         method: 'DELETE',
@@ -156,18 +159,23 @@ const handleSubmitComment = async (e: React.FormEvent) => {
     } catch (error) {
       console.error('Failed to delete comment:', error);
       toast.error('An error occurred while deleting the comment');
+    } finally {
+      setProcessingCommentId(null);
     }
   };
 
   const handleEditComment = async (commentId: string) => {
+    setProcessingCommentId(commentId);
     setEditingComment(commentId);
     const comment = comments.find(c => c._id === commentId);
     if (comment) {
       setEditContent(comment.content);
     }
+    setProcessingCommentId(null);
   };
 
   const handleSaveEdit = async (commentId: string) => {
+    setProcessingCommentId(commentId);
     try {
       const response = await fetch(`/api/comments/${commentId}/edit`, {
         method: 'PUT',
@@ -192,6 +200,8 @@ const handleSubmitComment = async (e: React.FormEvent) => {
     } catch (error) {
       console.error('Failed to update comment:', error);
       toast.error('An error occurred while updating the comment');
+    } finally {
+      setProcessingCommentId(null);
     }
   };
 
@@ -355,6 +365,12 @@ const handleSubmitComment = async (e: React.FormEvent) => {
           Please log in to post a comment.
         </Typography>
       )}
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={!!processingCommentId}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Box>
   );
 };
