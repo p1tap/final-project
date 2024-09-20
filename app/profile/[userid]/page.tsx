@@ -40,14 +40,14 @@ export default function ProfilePage() {
   const fetchProfileData = useCallback(async () => {
     if (userId) {
       try {
-        console.log('Fetching profile data for userId:', userId);
+        // console.log('Fetching profile data for userId:', userId);
         const response = await fetch(`/api/profile/${userId}`);
         const data = await response.json();
-        console.log('Profile data received:', data);
+        // console.log('Profile data received:', data);
         if (data.success) {
           setProfileUser(data.data.user);
           setPosts(data.data.posts);
-          console.log('Posts set in state:', data.data.posts);
+          // console.log('Posts set in state:', data.data.posts);
         } else {
           console.error('Failed to fetch profile data:', data.error);
         }
@@ -196,7 +196,7 @@ export default function ProfilePage() {
             <Typography variant="h5" sx={{ mb: 2 }}>Posts</Typography>
             <SortButton sortOrder={sortOrder} onSortChange={handleSortChange} />
             {posts.map(post => {
-                console.log('Rendering post:', post);
+                // console.log('Rendering post:', post);
                 return (
                   <PostCard key={post._id} post={post} onPostUpdated={handlePostUpdated} />
                 );

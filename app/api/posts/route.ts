@@ -74,18 +74,25 @@ export async function POST(request: Request) {
   await dbConnect();
 
   try {
-    const { fields, file } = await uploadFile(request);
+    const formData = await request.formData();
 
-    // console.log("Received fields:", fields); // Add this line for debugging
+    if (!formData.get('content') || !formData.get('userId')) {
+      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
+    }
 
-    if (!fields.content || !fields.content[0] || !fields.userId || !fields.userId[0]) {
-      return NextResponse.json({ success: false, error: "Missing required fields", receivedFields: fields }, { status: 400 });
+    const content = formData.get('content') as string;
+    const userId = formData.get('userId') as string;
+    const postImage = formData.get('postImage') as File | null;
+
+    let imageUrl = null;
+    if (postImage) {
+      imageUrl = await uploadFile(postImage, 'post_images');
     }
 
     const newPost = await Post.create({
-      content: fields.content[0],
-      user: fields.userId[0],
-      image: file.postImage?.[0]?.filepath
+      content: content,
+      user: userId,
+      image: imageUrl
     });
 
     const populatedPost = await Post.findById(newPost._id).populate("user", "username name profilePicture");

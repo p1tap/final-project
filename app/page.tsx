@@ -86,7 +86,7 @@ export default function Home() {
   return (
     <Box>
       <Header />
-      <Box sx={{ maxWidth: 600, margin: "0 auto", padding: 2 }}>
+      <Box sx={{ maxWidth: "md", margin: "0 auto", padding: 2 }}>
         <Typography variant="h4" component="h1" gutterBottom>
           Home
         </Typography>

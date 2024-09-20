@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, useRef } from 'react';
 import { Box, Typography, TextField, Button, List, ListItem, ListItemText, IconButton, Avatar } from '@mui/material';
 import CircularProgress from '@mui/material/CircularProgress';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -9,10 +9,13 @@ import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
 import { useAuth } from '../contexts/AuthContext';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
+import ImageIcon from '@mui/icons-material/Image';
+import Image from 'next/image';
 
 interface Comment {
   _id: string;
   content: string;
+  image?: string;
   user: {
     _id: string; 
     username: string;
@@ -31,10 +34,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [commentLikes, setCommentLikes] = useState<Record<string, { count: number, userLiked: boolean }>>({});
   const [comments, setComments] = useState<Comment[]>([]);
   const [newComment, setNewComment] = useState('');
+  const [commentImage, setCommentImage] = useState<File | null>(null);
   const [editingComment, setEditingComment] = useState<string | null>(null);
   const [editContent, setEditContent] = useState('');
   const { user } = useAuth();
   const [isPosting, setIsPosting] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
 
   // Wrap fetchComments in useCallback
   const fetchComments = useCallback(async () => {
@@ -42,12 +48,13 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       const response = await fetch(`/api/comments?postId=${postId}`);
       const data = await response.json();
       if (data.success) {
+        // console.log('Fetched comments:', data.data);
         setComments(data.data);
       }
     } catch (error) {
       console.error('Failed to fetch comments:', error);
     }
-  }, [postId]); // Add postId as a dependency
+  }, [postId]);
 
   // Wrap fetchCommentLikes in useCallback
   const fetchCommentLikes = useCallback(async (commentId: string) => {
@@ -74,40 +81,66 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     comments.forEach(comment => fetchCommentLikes(comment._id));
   }, [comments, fetchCommentLikes]); // Add fetchCommentLikes to the dependency array
 
-  const handleSubmitComment = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!user) {
-      toast.error('You must be logged in to comment.');
+const handleSubmitComment = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!user) {
+    toast.error('You must be logged in to comment.');
+    return;
+  }
+  setIsPosting(true);
+  try {
+    const formData = new FormData();
+    formData.append('postId', postId);
+    formData.append('content', newComment);
+    formData.append('userId', user.id);
+    if (commentImage) {
+      formData.append('commentImage', commentImage);
+      // console.log('Appending image to form data:', commentImage);
+    }
+
+    // console.log('Submitting comment:', { postId, content: newComment, userId: user.id, hasImage: !!commentImage });
+
+    const response = await fetch('/api/comments', {
+      method: 'POST',
+      body: formData,
+    });
+    
+    const responseText = await response.text();
+    console.log('Raw response:', responseText);
+    
+    let data;
+    try {
+      data = JSON.parse(responseText);
+    } catch (parseError) {
+      console.error('Failed to parse response:', parseError);
+      toast.error('Server response was not valid JSON');
       return;
     }
-    setIsPosting(true);
-    try {
-      const response = await fetch('/api/comments', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          postId,
-          content: newComment,
-          userId: user.id,
-        }),
-      });
-      const data = await response.json();
-      if (data.success) {
-        setNewComment('');
-        fetchComments();
-        toast.success('Comment posted successfully!');
-      } else {
-        toast.error(data.error || 'Failed to post comment');
-      }
-    } catch (error) {
-      console.error('Failed to submit comment:', error);
-      toast.error('An error occurred while posting the comment');
-    } finally {
-      setIsPosting(false);
+
+    // console.log('Parsed response data:', data);
+
+    if (data.success) {
+      setNewComment('');
+      setCommentImage(null);
+      fetchComments();
+      toast.success('Comment posted successfully!');
+    } else {
+      toast.error(data.error || 'Failed to post comment');
+    }
+  } catch (error) {
+    console.error('Failed to submit comment:', error);
+    toast.error('An error occurred while posting the comment');
+  } finally {
+    setIsPosting(false);
+  }
+};
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      setCommentImage(e.target.files[0]);
     }
   };
+
 
   const handleDeleteComment = async (commentId: string) => {
     try {
@@ -240,11 +273,29 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                         {comment.content}
                       </Typography>
                       <br />
+
+                      {/* Comment image */}
+                      {comment.image && (
+                        <Box sx={{ mt: 1, mb: 1 }}>
+                          <Image
+                            src={comment.image}
+                            alt="Comment image"
+                            width={50}
+                            height={50}
+                            layout="responsive"
+                          />
+                        </Box>
+                      )}
+                      <br />
+
+                      {/* Created and edited timestamps */}
                       <Typography component="span" variant="caption" color="text.secondary">
                         Created: {new Date(comment.createdAt).toLocaleString()}
                         {comment.updatedAt !== comment.createdAt && 
                           ` (Edited: ${new Date(comment.updatedAt).toLocaleString()})`}
                       </Typography>
+
+
                        {/* Like button and count */}
                        <IconButton onClick={() => handleCommentLike(comment._id)} size="small">
                         {commentLikes[comment._id]?.userLiked ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon />}
@@ -252,6 +303,8 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                       <Typography variant="caption" component="span">
                         {commentLikes[comment._id]?.count || 0} likes
                       </Typography>
+
+
                     </>
                   )}
                 </React.Fragment>
@@ -270,15 +323,32 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
             onChange={(e) => setNewComment(e.target.value)}
             margin="normal"
           />
-          <Button 
-            type="submit" 
-            variant="contained" 
-            color="primary" 
-            disabled={isPosting}
-            startIcon={isPosting ? <CircularProgress size={20} color="inherit" /> : null}
-          >
-            {isPosting ? 'Posting...' : 'Post Comment'}
-          </Button>
+          <Box sx={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', mt: 1 }}>
+            <input
+              type="file"
+              accept="image/*"
+              style={{ display: 'none' }}
+              ref={fileInputRef}
+              onChange={handleImageChange}
+            />
+            <IconButton onClick={() => fileInputRef.current?.click()}>
+              <ImageIcon />
+            </IconButton>
+            <Button 
+              type="submit" 
+              variant="contained" 
+              color="primary" 
+              disabled={isPosting}
+              startIcon={isPosting ? <CircularProgress size={20} color="inherit" /> : null}
+            >
+              {isPosting ? 'Posting...' : 'Post Comment'}
+            </Button>
+          </Box>
+          {commentImage && (
+            <Box sx={{ mt: 2 }}>
+              <img src={URL.createObjectURL(commentImage)} alt="Selected" style={{ maxWidth: '100%', maxHeight: '100px' }} />
+            </Box>
+          )}
         </Box>
       ) : (
         <Typography variant="body2" color="text.secondary">
