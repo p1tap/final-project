@@ -11,6 +11,8 @@ import Tooltip from '@mui/material/Tooltip';
 import EditIcon from '@mui/icons-material/Edit';
 import CircularProgress from '@mui/material/CircularProgress';
 import Backdrop from '@mui/material/Backdrop';
+import { useTheme } from '@mui/material/styles';
+
 
 
 const Header = () => {
@@ -20,6 +22,8 @@ const Header = () => {
   const [searchQuery, setSearchQuery] = useState('');
   const [isNavigating, setIsNavigating] = useState(false);
   const [isSearching, setIsSearching] = useState(false);
+  const theme = useTheme();
+
 
 
   const handleLogout = () => {
@@ -125,18 +129,21 @@ const Header = () => {
                     position: 'absolute',
                     bottom: 0,
                     right: 0,
-                    backgroundColor: 'background.paper',
+                    backgroundColor: theme.palette.background.paper,
                     borderRadius: '50%',
                     padding: '2px',
                     display: 'flex',
                     alignItems: 'center',
                     justifyContent: 'center',
                     border: '1px solid',
-                    borderColor: 'divider',
+                    borderColor: theme.palette.divider,
                     transform: 'translate(25%, 25%)',
                   }}
                 >
-                  <EditIcon sx={{ fontSize: 12 }} />
+                  <EditIcon sx={{ 
+                    fontSize: 12,
+                    color: theme.palette.text.primary, 
+                  }} />
                 </Box>
               </Box>
             </Box>
