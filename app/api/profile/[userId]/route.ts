@@ -11,6 +11,7 @@ import { Types } from 'mongoose';
 interface PostWithLikes {
   _id: string;
   content: string;
+  image?: string;
   user: {
     _id: string;
     username: string;
@@ -54,6 +55,7 @@ export async function GET(
       return {
         _id: post._id.toString(),
         content: post.content,
+        image: post.image,
         user: {
           _id: post.user._id.toString(),
           username: post.user.username,

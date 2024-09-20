@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
 import { Box, Typography, Container, Avatar, Button, CircularProgress } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
@@ -37,24 +37,29 @@ export default function ProfilePage() {
 
 
 
-  useEffect(() => {
-    const fetchProfileData = async () => {
-      if (userId) {
-        try {
-          const response = await fetch(`/api/profile/${userId}`);
-          const data = await response.json();
-          if (data.success) {
-            setProfileUser(data.data.user);
-            setPosts(data.data.posts);
-          }
-        } catch (error) {
-          console.error('Error fetching profile data:', error);
-        } finally {
-          setLoading(false);
+  const fetchProfileData = useCallback(async () => {
+    if (userId) {
+      try {
+        console.log('Fetching profile data for userId:', userId);
+        const response = await fetch(`/api/profile/${userId}`);
+        const data = await response.json();
+        console.log('Profile data received:', data);
+        if (data.success) {
+          setProfileUser(data.data.user);
+          setPosts(data.data.posts);
+          console.log('Posts set in state:', data.data.posts);
+        } else {
+          console.error('Failed to fetch profile data:', data.error);
         }
+      } catch (error) {
+        console.error('Error fetching profile data:', error);
+      } finally {
+        setLoading(false);
       }
-    };
+    }
+  }, [userId]);
 
+  useEffect(() => {
     fetchProfileData();
   }, [userId, refetchTrigger]);
 
@@ -190,10 +195,13 @@ export default function ProfilePage() {
             )}
             <Typography variant="h5" sx={{ mb: 2 }}>Posts</Typography>
             <SortButton sortOrder={sortOrder} onSortChange={handleSortChange} />
-            {posts.map(post => (
-              <PostCard key={post._id} post={post} onPostUpdated={handlePostUpdated} />
-            ))}
-          </Box>
+            {posts.map(post => {
+                console.log('Rendering post:', post);
+                return (
+                  <PostCard key={post._id} post={post} onPostUpdated={handlePostUpdated} />
+                );
+              })}
+            </Box>
         )}
       </Box>
     </Container>
