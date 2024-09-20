@@ -3,7 +3,6 @@ import dbConnect from "@/lib/dbConnect";
 import Post from "@/models/Post";
 import Like from "@/models/Like";
 import { uploadFile } from "@/lib/uploadHandler";
-import User from "@/models/User";
 
 export async function GET(request: Request) {
   await dbConnect();
