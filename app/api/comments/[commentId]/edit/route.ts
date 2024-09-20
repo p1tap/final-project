@@ -1,7 +1,7 @@
-// app/api/comments/[commentId]/edit/route.ts
 import { NextResponse } from "next/server";
 import dbConnect from "@/lib/dbConnect";
 import Comment from "@/models/Comment";
+import { uploadFile } from "@/lib/uploadHandler";
 
 export async function PUT(
   request: Request,
@@ -9,9 +9,14 @@ export async function PUT(
 ) {
   await dbConnect();
   const { commentId } = params;
-  const { content, userId } = await request.json();
 
   try {
+    const formData = await request.formData();
+    const content = formData.get('content') as string;
+    const userId = formData.get('userId') as string;
+    const removeImage = formData.get('removeImage') === 'true';
+    const newImage = formData.get('commentImage') as File | null;
+
     const comment = await Comment.findById(commentId);
 
     if (!comment) {
@@ -24,6 +29,16 @@ export async function PUT(
     }
 
     comment.content = content;
+
+    // Handle image removal or replacement
+    if (removeImage) {
+      comment.image = null;
+    } else if (newImage) {
+      // Upload new image to Cloudinary
+      const imageUrl = await uploadFile(newImage, 'comment_images');
+      comment.image = imageUrl;
+    }
+
     comment.updatedAt = new Date();
     await comment.save();
 

@@ -11,6 +11,7 @@ import { toast } from 'react-toastify';
 import Link from 'next/link';
 import ImageIcon from '@mui/icons-material/Image';
 import Image from 'next/image';
+import CloseIcon from '@mui/icons-material/Close';
 
 interface Comment {
   _id: string;
@@ -41,8 +42,9 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const [isPosting, setIsPosting] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const [processingCommentId, setProcessingCommentId] = useState<string | null>(null);
-
-
+  const [editImage, setEditImage] = useState<File | null>(null);
+  const [editImagePreview, setEditImagePreview] = useState<string | null>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   // Wrap fetchComments in useCallback
   const fetchComments = useCallback(async () => {
@@ -161,6 +163,7 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
     const comment = comments.find(c => c._id === commentId);
     if (comment) {
       setEditContent(comment.content);
+      setEditImagePreview(comment.image || null);
     }
     setProcessingCommentId(null);
   };
@@ -168,22 +171,28 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
   const handleSaveEdit = async (commentId: string) => {
     setProcessingCommentId(commentId);
     try {
+      const formData = new FormData();
+      formData.append('content', editContent);
+      formData.append('userId', user?.id || '');
+      
+      if (editImage) {
+        formData.append('commentImage', editImage);
+      } else if (editImagePreview === null) {
+        formData.append('removeImage', 'true');
+      }
+
       const response = await fetch(`/api/comments/${commentId}/edit`, {
         method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          content: editContent,
-          userId: user?.id,
-        }),
+        body: formData,
       });
       const data = await response.json();
       if (data.success) {
         setComments(comments.map(comment => 
-          comment._id === commentId ? { ...comment, content: editContent, updatedAt: new Date().toISOString() } : comment
+          comment._id === commentId ? { ...comment, content: editContent, image: data.data.image, updatedAt: new Date().toISOString() } : comment
         ));
         setEditingComment(null);
+        setEditImage(null);
+        setEditImagePreview(null);
         toast.success('Comment updated successfully');
       } else {
         toast.error(data.error || 'Failed to update comment');
@@ -193,6 +202,22 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
       toast.error('An error occurred while updating the comment');
     } finally {
       setProcessingCommentId(null);
+    }
+  };
+
+  const handleDeleteEditImage = () => {
+    setEditImage(null);
+    setEditImagePreview(null);
+    if (editFileInputRef.current) {
+      editFileInputRef.current.value = '';
+    }
+  };
+
+  const handleEditImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      const file = e.target.files[0];
+      setEditImage(file);
+      setEditImagePreview(URL.createObjectURL(file));
     }
   };
 
@@ -227,13 +252,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
               </Avatar>
             </Link>
 
-            {/* Menu for editing and deleting comments */}
             <ListItemText
               primary={
                 <Box component="div">
                   <Typography component="span" variant="subtitle2">
                     {comment.user.name} (@{comment.user.username})
                   </Typography>
+
+                  {/* Edit and delete comment */}
                   {user && user.id === comment.user._id && (
                     <>
                       <IconButton
@@ -266,17 +292,54 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                         onChange={(e) => setEditContent(e.target.value)}
                         margin="normal"
                       />
+                      <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        ref={editFileInputRef}
+                        onChange={handleEditImageChange}
+                      />
+                      <Box sx={{ display: 'flex', alignItems: 'center', mt: 1 }}>
+                        <IconButton onClick={() => editFileInputRef.current?.click()}>
+                          <ImageIcon />
+                        </IconButton>
+                      </Box>
+                      {editImagePreview && (
+                        <Box sx={{ mt: 2, position: 'relative', display: 'inline-block' }}>
+                          <Image
+                            src={editImagePreview}
+                            alt="Preview"
+                            width={200}
+                            height={200}
+                            style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain' }}
+                          />
+                          <IconButton
+                            onClick={handleDeleteEditImage}
+                            sx={{
+                              position: 'absolute',
+                              top: 0,
+                              right: 0,
+                              backgroundColor: 'rgba(255, 255, 255, 0.7)',
+                              '&:hover': {
+                                backgroundColor: 'rgba(255, 255, 255, 0.9)',
+                              },
+                            }}
+                          >
+                            <CloseIcon />
+                          </IconButton>
+                        </Box>
+                      )}
                       <Button onClick={() => handleSaveEdit(comment._id)}>Save</Button>
                       <Button onClick={() => setEditingComment(null)}>Cancel</Button>
                     </Box>
                   ) : (
-                    // Normal comment display
+                    // Normal comment display (remains the same)
                     <>
                       <Typography component="span" variant="body2" color="text.primary">
                         {comment.content}
                       </Typography>
                       <br />
-
+              
                       {/* Comment image */}
                       {comment.image && (
                         <Box sx={{ mt: 1, mb: 1, maxWidth: '300px' }}>
@@ -290,14 +353,14 @@ const CommentSection: React.FC<CommentSectionProps> = ({ postId }) => {
                         </Box>
                       )}
                       <br />
-
+              
                       {/* Created and edited timestamps */}
                       <Typography component="span" variant="caption" color="text.secondary">
                         Created: {new Date(comment.createdAt).toLocaleString()}
                         {comment.updatedAt !== comment.createdAt && 
                           ` (Edited: ${new Date(comment.updatedAt).toLocaleString()})`}
                       </Typography>
-
+              
                       {/* Like button and count */}
                       <IconButton onClick={() => handleCommentLike(comment._id)} size="small">
                         {commentLikes[comment._id]?.userLiked ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon />}
