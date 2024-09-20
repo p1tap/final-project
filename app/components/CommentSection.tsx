@@ -235,34 +235,36 @@ const handleSubmitComment = async (e: React.FormEvent) => {
                 {!comment.user.profilePicture && comment.user.name[0]}
               </Avatar>
             </Link>
+
+            {/* Menu for editing and deleting comments */}
             <ListItemText
               primary={
-                <React.Fragment>
+                <Box component="div">
                   <Typography component="span" variant="subtitle2">
                     {comment.user.name} (@{comment.user.username})
                   </Typography>
                   {user && user.id === comment.user._id && (
                     <>
-                    <IconButton
-                      edge="end"
-                      aria-label="edit"
-                      onClick={() => handleEditComment(comment._id)}
-                    >
-                      <EditIcon />
-                    </IconButton>
-                    <IconButton
-                      edge="end"
-                      aria-label="delete"
-                      onClick={() => handleDeleteComment(comment._id)}
-                    >
-                      <DeleteIcon />
-                    </IconButton>
-                  </>
+                      <IconButton
+                        edge="end"
+                        aria-label="edit"
+                        onClick={() => handleEditComment(comment._id)}
+                      >
+                        <EditIcon />
+                      </IconButton>
+                      <IconButton
+                        edge="end"
+                        aria-label="delete"
+                        onClick={() => handleDeleteComment(comment._id)}
+                      >
+                        <DeleteIcon />
+                      </IconButton>
+                    </>
                   )}
-                </React.Fragment>
+                </Box>
               }
               secondary={
-                <React.Fragment>
+                <Box component="div">
                   {editingComment === comment._id ? (
                     // Editing interface
                     <Box>
@@ -305,20 +307,19 @@ const handleSubmitComment = async (e: React.FormEvent) => {
                           ` (Edited: ${new Date(comment.updatedAt).toLocaleString()})`}
                       </Typography>
 
-
-                       {/* Like button and count */}
-                       <IconButton onClick={() => handleCommentLike(comment._id)} size="small">
+                      {/* Like button and count */}
+                      <IconButton onClick={() => handleCommentLike(comment._id)} size="small">
                         {commentLikes[comment._id]?.userLiked ? <FavoriteIcon color="primary" /> : <FavoriteBorderIcon />}
                       </IconButton>
                       <Typography variant="caption" component="span">
                         {commentLikes[comment._id]?.count || 0} likes
                       </Typography>
-
-
                     </>
                   )}
-                </React.Fragment>
+                </Box>
               }
+              primaryTypographyProps={{ component: 'div' }}
+              secondaryTypographyProps={{ component: 'div' }}
             />
           </ListItem>
         ))}

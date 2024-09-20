@@ -19,15 +19,21 @@ export default function NewPostForm({ onPostCreated }: NewPostFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!content && !image) {
+      toast.error('Please add some content or an image to your post');
+      return;
+    }
     setIsPosting(true);
     try {
       const formData = new FormData();
-      formData.append('content', content);
+      if (content) {
+        formData.append('content', content);
+      }
       formData.append('userId', user?.id || '');
       if (image) {
         formData.append('postImage', image);
       }
-
+  
       const response = await fetch("/api/posts", {
         method: "POST",
         body: formData,
@@ -37,13 +43,11 @@ export default function NewPostForm({ onPostCreated }: NewPostFormProps) {
         toast.success('Post created successfully');
         setContent("");
         setImage(null);
-        // Trigger a re-render of the parent component
         window.dispatchEvent(new CustomEvent('newpost'));
-
+  
         if (onPostCreated) {
           onPostCreated();
         }
-        
       } else {
         const errorData = await response.json();
         console.error("Failed to create post:", errorData);

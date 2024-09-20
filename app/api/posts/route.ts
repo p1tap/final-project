@@ -76,13 +76,17 @@ export async function POST(request: Request) {
   try {
     const formData = await request.formData();
 
-    if (!formData.get('content') || !formData.get('userId')) {
-      return NextResponse.json({ success: false, error: "Missing required fields" }, { status: 400 });
-    }
-
-    const content = formData.get('content') as string;
+    const content = formData.get('content') as string | null;
     const userId = formData.get('userId') as string;
     const postImage = formData.get('postImage') as File | null;
+
+    if (!userId) {
+      return NextResponse.json({ success: false, error: "User ID is required" }, { status: 400 });
+    }
+
+    if (!content && !postImage) {
+      return NextResponse.json({ success: false, error: "Either content or image is required" }, { status: 400 });
+    }
 
     let imageUrl = null;
     if (postImage) {
@@ -90,7 +94,7 @@ export async function POST(request: Request) {
     }
 
     const newPost = await Post.create({
-      content: content,
+      content: content || "",
       user: userId,
       image: imageUrl
     });
