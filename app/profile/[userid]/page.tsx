@@ -9,6 +9,7 @@ import EditProfileForm from '@/app/components/EditProfileForm';
 import { Post, User } from '@/app/types';
 import Header from '@/app/components/Header';
 import NewPostForm from "@/app/components/NewPostForm";
+import SortButton from '@/app/components/SortButton';
 
 
 
@@ -32,6 +33,8 @@ export default function ProfilePage() {
   const [isEditing, setIsEditing] = useState(false);
   const [loading, setLoading] = useState(true);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+
 
 
   useEffect(() => {
@@ -91,6 +94,16 @@ export default function ProfilePage() {
         .catch(error => console.error('Error refetching posts:', error));
     }
     setRefetchTrigger(prev => prev + 1);
+  };
+
+  const handleSortChange = (newSortOrder: 'newest' | 'oldest') => {
+    setSortOrder(newSortOrder);
+    const sortedPosts = [...posts].sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return newSortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+    setPosts(sortedPosts);
   };
 
   if (loading) {
@@ -176,6 +189,7 @@ export default function ProfilePage() {
               <NewPostForm onPostCreated={handlePostCreated} />
             )}
             <Typography variant="h5" sx={{ mb: 2 }}>Posts</Typography>
+            <SortButton sortOrder={sortOrder} onSortChange={handleSortChange} />
             {posts.map(post => (
               <PostCard key={post._id} post={post} onPostUpdated={handlePostUpdated} />
             ))}
