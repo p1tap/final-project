@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Box, Typography, TextField, Button, Container } from '@mui/material';
+import { Box, Typography, TextField, Button, Container, Backdrop, CircularProgress } from '@mui/material';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import Link from 'next/link';
@@ -12,10 +12,15 @@ const RegisterForm = () => {
   const [name, setName] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
+  const [loading, setLoading] = useState(false);
+  const [isSignInLoading, setIsSignInLoading] = useState(false);
+
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setError('');
+    setLoading(true);
 
     try {
       const response = await fetch('/api/auth/register', {
@@ -36,7 +41,15 @@ const RegisterForm = () => {
     } catch (error) {
       toast.error('An error occurred. Please try again.');
       setError('An error occurred. Please try again.');
+    } finally {
+      setLoading(false);
     }
+  };
+
+  const handleSignInClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsSignInLoading(true);
+    router.push('/login');
   };
 
   return (
@@ -102,14 +115,20 @@ const RegisterForm = () => {
             </Typography>
           )}
           <Box sx={{ textAlign: 'center', mt: 2 }}>
-          <Link href="/login" style={{ textDecoration: 'none' }}>
-            <Typography variant="body2" sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
-              Already have an account? Sign in here
-            </Typography>
-          </Link>
-        </Box>
+            <Link href="/login" onClick={handleSignInClick} style={{ textDecoration: 'none' }}>
+              <Typography variant="body2" sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
+                Already have an account? Sign in here
+              </Typography>
+            </Link>
+          </Box>
         </Box>
       </Box>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={loading || isSignInLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   );
 };

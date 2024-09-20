@@ -1,6 +1,6 @@
 "use client";
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Container } from '@mui/material';
+import { Box, TextField, Button, Typography, Container, Backdrop, CircularProgress } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
@@ -16,6 +16,8 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoadingChange }) => {
   const [error, setError] = useState('');
   const router = useRouter();
   const { login } = useAuth();
+  const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -46,6 +48,13 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoadingChange }) => {
       onLoadingChange(false);
     }
   };
+
+  const handleRegisterClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsRegisterLoading(true);
+    router.push('/register');
+  };
+
   return (
     <Container component="main" maxWidth="xs">
       <Box
@@ -98,14 +107,20 @@ const LoginForm: React.FC<LoginFormProps> = ({ onLoadingChange }) => {
             </Typography>
           )}
           <Box sx={{ textAlign: 'center' }}>
-            <Link href="/register" style={{ textDecoration: 'none' }}>
-              <Typography variant="body2" sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
-                {"Don't have an account? Register here"}
-              </Typography>
-            </Link>
+          <Link href="/register" onClick={handleRegisterClick} style={{ textDecoration: 'none' }}>
+            <Typography variant="body2" sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
+              {"Don't have an account? Register here"}
+            </Typography>
+          </Link>
           </Box>
         </Box>
       </Box>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isRegisterLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   );
 };
