@@ -17,15 +17,16 @@ export async function PUT(
   const { userId } = params;
 
   try {
-    const { fields, file } = await uploadFile(request);
-
+    const formData = await request.formData();
     const updateData: UpdateData = {};
     
-    if (fields.name && fields.name[0]) updateData.name = fields.name[0];
-    if (fields.bio && fields.bio[0]) updateData.bio = fields.bio[0];
+    if (formData.get('name')) updateData.name = formData.get('name') as string;
+    if (formData.get('bio')) updateData.bio = formData.get('bio') as string;
 
-    if (file && file.profilePicture) {
-      updateData.profilePicture = file.profilePicture[0].filepath;
+    const profilePicture = formData.get('profilePicture') as File | null;
+    if (profilePicture) {
+      const imageUrl = await uploadFile(profilePicture, 'user_avatars');
+      updateData.profilePicture = imageUrl;
     }
 
     const updatedUser = await User.findByIdAndUpdate(
@@ -33,9 +34,6 @@ export async function PUT(
       updateData,
       { new: true, runValidators: true }
     ).select('-password');
-
-    //console.log("Updated user data:", updatedUser);
-
 
     if (!updatedUser) {
       return NextResponse.json({ success: false, error: "User not found" }, { status: 404 });

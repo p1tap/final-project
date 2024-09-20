@@ -276,13 +276,13 @@ const handleSubmitComment = async (e: React.FormEvent) => {
 
                       {/* Comment image */}
                       {comment.image && (
-                        <Box sx={{ mt: 1, mb: 1 }}>
+                        <Box sx={{ mt: 1, mb: 1, maxWidth: '300px' }}>
                           <Image
                             src={comment.image}
                             alt="Comment image"
-                            width={50}
-                            height={50}
-                            layout="responsive"
+                            width={400}
+                            height={400}
+                            style={{ width: '100%', height: 'auto' }}
                           />
                         </Box>
                       )}

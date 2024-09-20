@@ -1,7 +1,7 @@
 "use client";
 import React, { useEffect, useState, useCallback } from 'react';
 import { useParams } from 'next/navigation';
-import { Box, Typography, Container, Avatar, Button, CircularProgress } from '@mui/material';
+import { Box, Typography, Container, Avatar, Button, CircularProgress, Backdrop } from '@mui/material';
 import EditIcon from '@mui/icons-material/Edit';
 import { useAuth } from '@/app/contexts/AuthContext';
 import PostCard from '@/app/components/PostCard';
@@ -34,6 +34,8 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [refetchTrigger, setRefetchTrigger] = useState(0);
   const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+  const [isLoading, setIsLoading] = useState(false);
+
 
 
 
@@ -68,8 +70,14 @@ export default function ProfilePage() {
   };
 
   const handleEditProfile = () => {
-    setIsEditing(true);
+    setIsLoading(true);
+    // Simulate a delay (remove this in production and replace with actual loading logic)
+    setTimeout(() => {
+      setIsEditing(true);
+      setIsLoading(false);
+    }, 1000);
   };
+
 
   const handleUpdateSuccess = () => {
     setIsEditing(false);
@@ -163,10 +171,14 @@ export default function ProfilePage() {
               </Box>
             )}
           </Box>
+
+          {/* Profile Info */}
           <Box>
             <Typography variant="h4">{profileUser.name}</Typography>
             <Typography variant="subtitle1" color="text.secondary">@{profileUser.username}</Typography>
             {currentUser && currentUser.id === profileUser._id && !isEditing && (
+              
+              // Edit Profile 
               <Button variant="outlined" onClick={handleEditProfile} sx={{ mt: 1 }}>
                 Edit Profile
               </Button>
