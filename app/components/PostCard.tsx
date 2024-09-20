@@ -170,17 +170,22 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
             <Typography variant="body1" sx={{ mb: 2 }}>
               {post.content}
             </Typography>
+
+            {/* Post image */}
             {post.image && (
-              <Box sx={{ mb: 2 }}>
-                <Image
-                  src={post.image}
-                  alt="Post image"
-                  width={500}
-                  height={300}
-                  layout="responsive"
-                />
-              </Box>
+            <Box sx={{ mb: 2, position: 'relative', width: '100%', paddingTop: '60%' }}>
+              <Image
+                src={post.image}
+                alt="Post image"
+                fill
+                sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+                priority={true} // Add this if you can determine if it's the first post
+                style={{ objectFit: 'cover' }}
+              />
+            </Box>
             )}
+
+            {/* Post created and edited timestamps */}
             <Box display="flex" alignItems="center" justifyContent="space-between">
               <Typography variant="caption" color="text.secondary">
                 {new Date(post.createdAt).toLocaleString()}
