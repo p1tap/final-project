@@ -356,10 +356,16 @@ const handleSubmitComment = async (e: React.FormEvent) => {
             </Button>
           </Box>
           {commentImage && (
-            <Box sx={{ mt: 2 }}>
-              <img src={URL.createObjectURL(commentImage)} alt="Selected" style={{ maxWidth: '100%', maxHeight: '100px' }} />
-            </Box>
-          )}
+          <Box sx={{ mt: 2 }}>
+            <Image
+              src={URL.createObjectURL(commentImage)}
+              alt="Selected"
+              width={100}
+              height={100}
+              style={{ maxWidth: '100%', maxHeight: '100px', objectFit: 'contain' }}
+            />
+          </Box>
+        )}
         </Box>
       ) : (
         <Typography variant="body2" color="text.secondary">

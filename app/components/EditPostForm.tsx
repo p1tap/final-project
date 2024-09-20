@@ -5,6 +5,7 @@ import { Post } from '../types';
 import { toast } from 'react-toastify';
 import ImageIcon from '@mui/icons-material/Image';
 import DeleteIcon from '@mui/icons-material/Delete';
+import Image from 'next/image';
 
 interface EditPostFormProps {
   post: Post;
@@ -84,10 +85,16 @@ const EditPostForm: React.FC<EditPostFormProps> = ({ post, onEditComplete }) => 
         )}
       </Box>
       {imagePreview && (
-        <Box sx={{ mt: 2 }}>
-          <img src={imagePreview} alt="Preview" style={{ maxWidth: '100%', maxHeight: '200px' }} />
-        </Box>
-      )}
+      <Box sx={{ mt: 2 }}>
+        <Image
+          src={imagePreview}
+          alt="Preview"
+          width={200}
+          height={200}
+          style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain' }}
+        />
+      </Box>
+    )}
       <Box sx={{ mt: 2 }}>
         <Button type="submit" variant="contained" color="primary">
           Save Changes

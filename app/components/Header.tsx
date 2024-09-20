@@ -2,7 +2,6 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { AppBar, Toolbar, Typography, Box, Avatar, TextField, InputAdornment } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
-import Link from 'next/link';
 import { useAuth } from '../contexts/AuthContext';
 import { useRouter, usePathname } from 'next/navigation';
 import HomeIcon from '@mui/icons-material/Home';

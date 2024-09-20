@@ -1,11 +1,9 @@
 "use client";
 import React, { useState, useCallback } from 'react';
 import { useEffect } from 'react';
-import { Card, CardContent, Typography, Avatar, Box, IconButton, Button } from '@mui/material';
+import { Card, CardContent, Typography, Avatar, Box, IconButton } from '@mui/material';
 import FavoriteIcon from '@mui/icons-material/Favorite';
 import FavoriteBorderIcon from '@mui/icons-material/FavoriteBorder';
-import EditIcon from '@mui/icons-material/Edit';
-import DeleteIcon from '@mui/icons-material/Delete';
 import { useAuth } from '../contexts/AuthContext';
 import EditPostForm from './EditPostForm';
 import { Post } from '../types';
@@ -93,10 +91,6 @@ const PostCard: React.FC<PostCardProps> = ({ post, onPostUpdated }) => {
     } catch (error) {
       console.error('Failed to like/unlike post:', error);
     }
-  };
-
-  const handleEdit = () => {
-    setIsEditing(true);
   };
 
   const handleDelete = async () => {

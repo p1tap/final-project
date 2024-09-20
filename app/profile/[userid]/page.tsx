@@ -12,18 +12,6 @@ import NewPostForm from "@/app/components/NewPostForm";
 import SortButton from '@/app/components/SortButton';
 
 
-
-interface EditProfileFormProps {
-  user: {
-    _id: string;
-    name: string;
-    bio?: string; // Make bio optional
-    profilePicture?: string;
-    username: string;
-  };
-  onUpdateSuccess: () => void;
-}
-
 export default function ProfilePage() {
   const params = useParams();
   const userId = params?.userId || params?.userid || null;
