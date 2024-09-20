@@ -5,6 +5,7 @@ import { useAuth } from '../contexts/AuthContext';
 import { toast } from "react-toastify";
 import ImageIcon from '@mui/icons-material/Image';
 import CircularProgress from '@mui/material/CircularProgress';
+import Image from "next/image";
 
 interface NewPostFormProps {
   onPostCreated?: () => void;
@@ -99,10 +100,16 @@ export default function NewPostForm({ onPostCreated }: NewPostFormProps) {
         </Button>
       </Box>
       {image && (
-        <Box sx={{ mt: 2 }}>
-          <img src={URL.createObjectURL(image)} alt="Selected" style={{ maxWidth: '100%', maxHeight: '200px' }} />
-        </Box>
-      )}
+      <Box sx={{ mt: 2 }}>
+        <Image
+          src={URL.createObjectURL(image)}
+          alt="Selected"
+          width={200}
+          height={200}
+          style={{ maxWidth: '100%', maxHeight: '200px', objectFit: 'contain' }}
+        />
+      </Box>
+    )}
     </Box>
   );
 }

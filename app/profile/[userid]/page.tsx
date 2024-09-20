@@ -51,7 +51,7 @@ export default function ProfilePage() {
 
   useEffect(() => {
     fetchProfileData();
-  }, [userId, refetchTrigger]);
+  }, [fetchProfileData, refetchTrigger]);
 
   const handlePostCreated = () => {
     setRefetchTrigger(prev => prev + 1);

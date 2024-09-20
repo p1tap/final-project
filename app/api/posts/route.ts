@@ -13,7 +13,7 @@ export async function GET(request: Request) {
   // console.log(`GET /api/posts - Query params:`, { userId });
 
   try {
-    let query = {};
+    const query = {};
     // Remove this condition to fetch all posts regardless of user
     // if (userId) {
     //   query = { user: userId };
@@ -54,21 +54,21 @@ export async function GET(request: Request) {
 }
 
 
-export async function HEAD(request: Request) {
-  await dbConnect();
-  try {
-    const users = await User.find({}).select('_id username');
-    // console.log("All users:");
-    for (const user of users) {
-      const postCount = await Post.countDocuments({ user: user._id });
-      // console.log(`User ${user.username} (${user._id}): ${postCount} posts`);
-    }
-    return new Response(null, { status: 200 });
-  } catch (error) {
-    console.error("Failed to fetch user and post information:", error);
-    return new Response(null, { status: 500 });
-  }
-}
+// export async function HEAD(request: Request) {
+//   await dbConnect();
+//   try {
+//     const users = await User.find({}).select('_id username');
+//     // console.log("All users:");
+//     for (const user of users) {
+//       const postCount = await Post.countDocuments({ user: user._id });
+//       // console.log(`User ${user.username} (${user._id}): ${postCount} posts`);
+//     }
+//     return new Response(null, { status: 200 });
+//   } catch (error) {
+//     console.error("Failed to fetch user and post information:", error);
+//     return new Response(null, { status: 500 });
+//   }
+// }
 
 export async function POST(request: Request) {
   await dbConnect();
