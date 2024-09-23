@@ -7,6 +7,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useAuth } from "./contexts/AuthContext";
 import { Post } from "./types";
 import { useRouter } from 'next/navigation';
+import SortButton from "./components/SortButton";
 
 
 export default function Home() {
@@ -14,14 +15,16 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const { isLoading: authLoading, user } = useAuth();
   const router = useRouter();
+  const [sortOrder, setSortOrder] = useState<'newest' | 'oldest'>('newest');
+
 
   const fetchPosts = useCallback(async () => {
     try {
-      console.log("Fetching posts...");
-      const response = await fetch('/api/posts');
+      //("Fetching posts...");
+      const response = await fetch(`/api/posts?userId=${user?.id}`);
       const data = await response.json();
       if (data.success) {
-        console.log("Fetched posts:", data.data);
+        //console.log("Fetched posts:", data.data);
         setPosts(data.data);
       }
     } catch (error) {
@@ -29,11 +32,22 @@ export default function Home() {
     } finally {
       setLoading(false);
     }
-  }, []);
+  }, [user]);
 
   const handlePostUpdated = useCallback(() => {
     fetchPosts();
   }, [fetchPosts]);
+
+  const handleSortChange = (newSortOrder: 'newest' | 'oldest') => {
+    setSortOrder(newSortOrder);
+    const sortedPosts = [...posts].sort((a, b) => {
+      const dateA = new Date(a.createdAt).getTime();
+      const dateB = new Date(b.createdAt).getTime();
+      return newSortOrder === 'newest' ? dateB - dateA : dateA - dateB;
+    });
+    setPosts(sortedPosts);
+  };
+
 
   // Fetch posts if user is logged in
   useEffect(() => {
@@ -72,11 +86,12 @@ export default function Home() {
   return (
     <Box>
       <Header />
-      <Box sx={{ maxWidth: 600, margin: "0 auto", padding: 2 }}>
+      <Box sx={{ maxWidth: "md", margin: "0 auto", padding: 2 }}>
         <Typography variant="h4" component="h1" gutterBottom>
-          Social Media Feed
+          Home
         </Typography>
         <NewPostForm />
+        <SortButton sortOrder={sortOrder} onSortChange={handleSortChange} />
         {posts.map((post) => (
           <PostCard key={post._id} post={post} onPostUpdated={handlePostUpdated} />
         ))}

@@ -1,21 +1,29 @@
 "use client";
 import React, { useState } from 'react';
-import { Box, TextField, Button, Typography, Container } from '@mui/material';
+import { Box, TextField, Button, Typography, Container, Backdrop, CircularProgress } from '@mui/material';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { toast } from 'react-toastify';
 import { useAuth } from '../contexts/AuthContext';
 
-const LoginForm = () => {
+interface LoginFormProps {
+  onLoadingChange: (isLoading: boolean) => void;
+}
+
+const LoginForm: React.FC<LoginFormProps> = ({ onLoadingChange }) => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
   const { login } = useAuth();
+  const [isRegisterLoading, setIsRegisterLoading] = useState(false);
+
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    
     setError('');
+    onLoadingChange(true);
 
     try {
       const response = await fetch('/api/auth/login', {
@@ -25,12 +33,9 @@ const LoginForm = () => {
       });
 
       const data = await response.json();
-      console.log("Login API response:", data);
 
       if (response.ok) {
         toast.success('Login successful!');
-        console.log('Login successful:', data.user);
-        console.log("Full login API response:", data);
         login(data.user);
         router.push('/');
       } else {
@@ -39,7 +44,15 @@ const LoginForm = () => {
       }
     } catch (error) {
       setError('An error occurred. Please try again.');
+    } finally {
+      onLoadingChange(false);
     }
+  };
+
+  const handleRegisterClick = (e: React.MouseEvent<HTMLAnchorElement>) => {
+    e.preventDefault();
+    setIsRegisterLoading(true);
+    router.push('/register');
   };
 
   return (
@@ -94,14 +107,20 @@ const LoginForm = () => {
             </Typography>
           )}
           <Box sx={{ textAlign: 'center' }}>
-            <Link href="/register" style={{ textDecoration: 'none' }}>
-              <Typography variant="body2" sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
-                {"Don't have an account? Register here"}
-              </Typography>
-            </Link>
+          <Link href="/register" onClick={handleRegisterClick} style={{ textDecoration: 'none' }}>
+            <Typography variant="body2" sx={{ color: 'primary.main', '&:hover': { textDecoration: 'underline' } }}>
+              {"Don't have an account? Register here"}
+            </Typography>
+          </Link>
           </Box>
         </Box>
       </Box>
+      <Backdrop
+        sx={{ color: '#fff', zIndex: (theme) => theme.zIndex.drawer + 1 }}
+        open={isRegisterLoading}
+      >
+        <CircularProgress color="inherit" />
+      </Backdrop>
     </Container>
   );
 };

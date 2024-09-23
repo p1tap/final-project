@@ -7,6 +7,7 @@ export async function POST(request: Request) {
 
   try {
     const { username, password } = await request.json();
+    // console.log('Login attempt:', { username });
 
     // Basic validation
     if (!username || !password) {
@@ -15,12 +16,14 @@ export async function POST(request: Request) {
 
     // Find user by username
     const user = await User.findOne({ username });
+    // console.log('User found:', user ? 'Yes' : 'No');
     if (!user) {
       return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
     }
 
     // Check password
     const isMatch = await user.comparePassword(password);
+    // console.log('Password match:', isMatch);
     if (!isMatch) {
       return NextResponse.json({ success: false, message: 'Invalid credentials' }, { status: 401 });
     }
@@ -28,6 +31,7 @@ export async function POST(request: Request) {
     // Login successful
     // For now, we'll just return a success message
     // In a real app, you'd set up a session or return a JWT here
+    // console.log('Login successful for user:', user.username);
     return NextResponse.json({ 
       success: true, 
       message: 'Login successful',

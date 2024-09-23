@@ -15,6 +15,7 @@ export interface Comment {
 export interface Post {
   _id: string;
   content: string;
+  image?: string;
   user: {
     _id: string;
     username: string;
@@ -24,6 +25,7 @@ export interface Post {
   createdAt: string;
   updatedAt?: string;
   likeCount: number;
+  userLiked: boolean;
   comments?: Comment[];
 }
 

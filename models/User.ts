@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Document } from "mongoose";
 import bcrypt from 'bcryptjs';
 
 const UserSchema = new mongoose.Schema({
@@ -24,7 +24,22 @@ UserSchema.pre('save', async function(next) {
 
 // Method to check password
 UserSchema.methods.comparePassword = async function(candidatePassword: string) {
+  // console.log('Comparing passwords:', { 
+  //   candidatePassword, 
+  //   hashedPassword: this.password.substring(0, 10) + '...' 
+  // });
   return bcrypt.compare(candidatePassword, this.password);
 };
+
+
+export interface IUser {
+  _id: mongoose.Types.ObjectId;
+  username: string;
+  password: string;
+  name: string;
+  bio: string;
+  profilePicture: string;
+  comparePassword(candidatePassword: string): Promise<boolean>;
+}
 
 export default mongoose.models.User || mongoose.model("User", UserSchema);
