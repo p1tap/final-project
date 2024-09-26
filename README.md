@@ -39,13 +39,19 @@
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
-This project is a modern web application built using the latest technologies and best practices. It includes a robust component library, authentication, TypeScript for type safety, and a MongoDB database for data storage.
+This is a social media web app built with Next.js, MongoDB, and Cloudinary.
 
-Here's why this project stands out:
-* Utilizes a modern component library for a consistent and responsive UI.
-* Implements secure authentication mechanisms.
-* Uses TypeScript to ensure type safety and reduce bugs.
-* Connects to a MongoDB database for efficient data management.
+Features:
+* User authentication (login, logout, register) with local storage
+* Post creation / deletion / editing / sorting
+* image upload on post / profile / comment 
+* Commenting / deletion / editing
+* Profile creation / editing / viewing
+* Liking / unliking posts
+* Image upload / deletion / editing
+* Search for users and posts
+
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -88,12 +94,6 @@ This project is built with the following major frameworks and libraries:
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-
-
-
-
 
 
 <!-- MARKDOWN LINKS & IMAGES -->
