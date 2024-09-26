@@ -29,12 +29,6 @@
         <li><a href="#installation">Installation</a></li>
       </ul>
     </li>
-    <li><a href="#usage">Usage</a></li>
-    <li><a href="#roadmap">Roadmap</a></li>
-    <li><a href="#contributing">Contributing</a></li>
-    <li><a href="#license">License</a></li>
-    <li><a href="#contact">Contact</a></li>
-    <li><a href="#acknowledgments">Acknowledgments</a></li>
   </ol>
 </details>
 
@@ -66,6 +60,7 @@ This project is built with the following major frameworks and libraries:
 * [![MUI][MUI]][MUI-url]
 * [![TypeScript][TypeScript]][TypeScript-url]
 * [![MongoDB][MongoDB]][MongoDB-url]
+* [![Cloudinary][Cloudinary]][Cloudinary-url]
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -126,3 +121,5 @@ This project is built with the following major frameworks and libraries:
 [TypeScript-url]: https://www.typescriptlang.org/
 [MongoDB]: https://img.shields.io/badge/MongoDB-47A248?style=for-the-badge&logo=mongodb&logoColor=white
 [MongoDB-url]: https://www.mongodb.com/
+[Cloudinary]: https://img.shields.io/badge/Cloudinary-007ACC?style=for-the-badge&logo=cloudinary&logoColor=white
+[Cloudinary-url]: https://cloudinary.com/
