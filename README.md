@@ -93,6 +93,47 @@ This project is built with the following major frameworks and libraries:
     CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
    ```
 
+### Data model
+
+1. **User**:
+   - `_id`: User ID (ObjectId)
+   - `username`: Username (String, required, unique)
+   - `password`: Hashed password (String, required)
+   - `name`: User's name (String, required)
+   - `bio`: User's biography (String, default: "")
+   - `profilePicture`: URL to the profile picture (String, default: "")
+
+2. **Post**:
+   - `_id`: Post ID (ObjectId)
+   - `user`: Reference to User (ObjectId, required)
+   - `content`: Content of the post (String, default: "")
+   - `image`: URL to the image of the post (String or null)
+   - `createdAt`: Timestamp of post creation (Date, default: current date)
+   - `updatedAt`: Timestamp of last update (Date, default: current date)
+
+3. **Comment**:
+   - `_id`: Comment ID (ObjectId)
+   - `user`: Reference to User (ObjectId, required)
+   - `post`: Reference to Post (ObjectId, required)
+   - `content`: Content of the comment (String, default: "")
+   - `image`: URL to the image of the comment (String, default: null)
+   - `createdAt`: Timestamp of comment creation (Date, default: current date)
+   - `updatedAt`: Timestamp of last update (Date, default: current date)
+
+4. **Like**:
+   - `_id`: Like ID (ObjectId)
+   - `user`: Reference to User (ObjectId, required)
+   - `post`: Reference to Post (ObjectId, required)
+
+5. **CommentLike**:
+   - `_id`: CommentLike ID (ObjectId)
+   - `user`: Reference to User (ObjectId, required)
+   - `comment`: Reference to Comment (ObjectId, required)
+
+Note: The User model also includes a method `comparePassword` for password verification.
+
+   
+
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 
