@@ -38,7 +38,7 @@
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](https://example.com)
+[![Product Name Screen Shot][product-screenshot]](/public/logo.png)
 
 This is a social media web app built with Next.js, MongoDB, and Cloudinary.
 <!--- path for screenshots: 
@@ -57,34 +57,34 @@ public\edit-del-post.png
 ## Screenshots
 
 ### Home Page
-![Home Page](/home.png)
+![Home Page](/public/home.png)
 
 ### Profile Page
-![Profile Page](/profile.png)
+![Profile Page](/public/profile.png)
 
 ### Edit Profile
-![Edit Profile](/edit-profile.png)
+![Edit Profile](/public/editprofile.png)
 
 ### Login Page
-![Login Page](/login.png)
+![Login Page](/public/login.png)
 
 ### Register Page
-![Register Page](/register.png)
+![Register Page](/public/register.png)
 
 ### Search Functionality
-![Search Functionality](/search.png)
+![Search Functionality](/public/search.png)
 
 ### Comment Section
-![Comment Section](/comment.png)
+![Comment Section](/public/comment.png)
 
 ### Like and Comment Interaction
-![Like and Comment Interaction](/like-comment.png)
+![Like and Comment Interaction](/public/like-comment.png)
 
 ### Image Comment
-![Image Comment](/image-comment.png)
+![Image Comment](/public/image-comment.png)
 
 ### Edit and Delete Post
-![Edit and Delete Post](/edit-del-post.png)
+![Edit and Delete Post](/public/edit-del-post.png)
 
 
 
