@@ -128,10 +128,10 @@ This project is built with the following major frameworks and libraries:
    ```
 4. Enter your API keys and other environment variables in `.env`
    ```sh
-  MONGODB_URI=YOUR_MONGODB_URI
-  CLOUDINARY_CLOUD_NAME=YOUR_CLOUDINARY_CLOUD_NAME
-  CLOUDINARY_API_KEY=YOUR_CLOUDINARY_API_KEY
-  CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
+    MONGODB_URI=YOUR_MONGODB_URI
+    CLOUDINARY_CLOUD_NAME=YOUR_CLOUDINARY_CLOUD_NAME
+    CLOUDINARY_API_KEY=YOUR_CLOUDINARY_API_KEY
+    CLOUDINARY_API_SECRET=YOUR_CLOUDINARY_API_SECRET
    ```
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
