@@ -1,4 +1,5 @@
-# Final Project
+# Solo Social
+# 6510190 Peerapat Thubthimthong
 
 <!-- Improved compatibility of back to top link: See: https://github.com/othneildrew/Best-README-Template/pull/73 -->
 <a id="readme-top"></a>
@@ -40,6 +41,55 @@
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
 This is a social media web app built with Next.js, MongoDB, and Cloudinary.
+<!--- path for screenshots: 
+public\home.png
+public\profile.png
+public\edit-profile.png
+public\login.png
+public\register.png
+public\search.png
+public\comment.png
+public\like-comment.png
+public\image-comment.png
+public\edit-del-post.png
+
+--->
+## Screenshots
+
+### Home Page
+![Home Page](/home.png)
+
+### Profile Page
+![Profile Page](/profile.png)
+
+### Edit Profile
+![Edit Profile](/edit-profile.png)
+
+### Login Page
+![Login Page](/login.png)
+
+### Register Page
+![Register Page](/register.png)
+
+### Search Functionality
+![Search Functionality](/search.png)
+
+### Comment Section
+![Comment Section](/comment.png)
+
+### Like and Comment Interaction
+![Like and Comment Interaction](/like-comment.png)
+
+### Image Comment
+![Image Comment](/image-comment.png)
+
+### Edit and Delete Post
+![Edit and Delete Post](/edit-del-post.png)
+
+
+
+This is a social media web app built with Next.js, MongoDB, and Cloudinary.
+
 
 Features:
 * User authentication (login, logout, register) with local storage
