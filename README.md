@@ -19,6 +19,9 @@
 
 This is a social media app built with Next.js, MongoDB, and Cloudinary. This app let users to create an account and post images and interact with other users. like post and comment on posts. Also visit other users profile and like and comment on their posts.
 
+### Deployment link
+[Solo Social](https://solo-social-frontend.vercel.app/)
+
 <!--- path for screenshots: 
 public\home.png
 public\profile.png
