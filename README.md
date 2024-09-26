@@ -12,33 +12,10 @@
 -->
 
 
-
-<!-- TABLE OF CONTENTS -->
-<details>
-  <summary>Table of Contents</summary>
-  <ol>
-    <li>
-      <a href="#about-the-project">About The Project</a>
-      <ul>
-        <li><a href="#built-with">Built With</a></li>
-      </ul>
-    </li>
-    <li>
-      <a href="#getting-started">Getting Started</a>
-      <ul>
-        <li><a href="#prerequisites">Prerequisites</a></li>
-        <li><a href="#installation">Installation</a></li>
-      </ul>
-    </li>
-  </ol>
-</details>
-
-
-
 <!-- ABOUT THE PROJECT -->
 ## About The Project
 
-[![Product Name Screen Shot][product-screenshot]](/public/logo.png)
+![Logo](/public/logo.png)
 
 This is a social media web app built with Next.js, MongoDB, and Cloudinary.
 <!--- path for screenshots: 
@@ -82,6 +59,9 @@ public\edit-del-post.png
 
 ### Image Comment
 ![Image Comment](/public/image-comment.png)
+
+### Comment Edit and Delete
+![Comment Edit and Delete](/public/edit-del-comment.png)
 
 ### Edit and Delete Post
 ![Edit and Delete Post](/public/edit-del-post.png)
